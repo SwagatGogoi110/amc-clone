@@ -1,10 +1,11 @@
+import 'package:amcdemo/widgets/navigation_drawer.dart';
 import 'package:flutter/material.dart';
 
 class DetailsScreen extends StatefulWidget {
-  const DetailsScreen({super.key});
+  const DetailsScreen({Key? key}) : super(key: key);
 
   @override
-  State<DetailsScreen> createState() => _DetailsScreenState();
+  _DetailsScreenState createState() => _DetailsScreenState();
 }
 
 class _DetailsScreenState extends State<DetailsScreen> {
@@ -14,54 +15,81 @@ class _DetailsScreenState extends State<DetailsScreen> {
   bool amcValid = true;
   bool warrantyValid = true;
 
-  @override
-  Widget build(BuildContext context) {
-    final deviceHeight = MediaQuery.of(context).size.height;
-    final deviceWidth = MediaQuery.of(context).size.width;
+  late double deviceHeight;
+  late double deviceWidth;
 
-    return Scaffold(
-      body: _buildBottom(MediaQuery.of(context).size),
-    );
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      final size = MediaQuery.of(context).size;
+      setState(() {
+        deviceHeight = size.height;
+        deviceWidth = size.width;
+      });
+    });
   }
 
-  Widget _buildBottom(Size mediaSize) {
-    return SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: mediaSize.height,
-        ),
-        child: Stack(
-          children: [
-            Container(
-              height: mediaSize.height * 0.5,
-              width: mediaSize.width,
-              decoration: BoxDecoration(
-                color: const Color(0xFF243C63),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-            ),
-            Container(
-              height: mediaSize.height,
-              width: mediaSize.width,
-              decoration: BoxDecoration(
+  @override
+  Widget build(BuildContext context) {
+    if (deviceHeight == null || deviceWidth == null) {
+      return Container();
+    }
+
+    return Scaffold(
+      key: _scaffoldKey,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage("assets/bgYellow.png"),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: mediaSize.height * 0.1),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: deviceHeight * 0.5,
+              decoration: const BoxDecoration(
+                color: Color(0xFF243C63),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: deviceHeight * 0.1,
+            left: 0,
+            right: 0,
+            child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Search Container
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          _scaffoldKey.currentState!.openDrawer();
+                        },
+                        icon: const Icon(Icons.menu, size: 35,),
+                      ),
+                    ],
+                  ),
                   Padding(
-                    padding: EdgeInsets.all(mediaSize.height * 0.01),
+                    padding: EdgeInsets.all(deviceHeight * 0.01),
                     child: Column(
                       children: [
                         TextFormField(
@@ -70,110 +98,106 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             filled: true,
                             fillColor: Colors.white,
                             hintText: 'Enter Vehicle Chassis Number',
-                            contentPadding: EdgeInsets.all(15),
+                            contentPadding: const EdgeInsets.all(15),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide.none,
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.blue),
+                              borderSide: const BorderSide(color: Colors.blue),
                             ),
                           ),
                         ),
                         ElevatedButton(
                           onPressed: () {
                             // Handle search functionality
-                            debugPrint("ChassisNumber: ${chassisController.text}");
+                            debugPrint(
+                                "ChassisNumber: ${chassisController.text}");
                           },
-                          child: Text(
-                            'Search',
-                            style: TextStyle(color: Colors.black),
-                          ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.yellow,
+                          ),
+                          child: const Text(
+                            'Search',
+                            style: TextStyle(color: Colors.black),
                           ),
                         ),
                       ],
                     ),
                   ),
-
-                  // Details Container
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    width: mediaSize.width * 0.8,
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    width: deviceWidth * 0.8,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 10),
                     margin: EdgeInsets.only(
-                        top: mediaSize.height * 0.03, bottom: mediaSize.height * 0.015),
+                        top: deviceHeight * 0.03, bottom: deviceHeight * 0.015),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Visibility(
                           visible: showViewMore,
-                            child: _buildDetailsBlock('Basic Details', [
-                              'Owner',
-                              'Phone No',
-                              'Chassis No',
-                              'Registration Date',
-                              'Vehicles Make',
-                              'Vehicles Model',
-                              'Fuel Type',
-                            ]),),
-                        // Basic Details
-
-
-                        // AMC Details
-                        Visibility(
-                          visible: amcValid, // Replace with your own condition
-                          child: _buildDetailsBlock('AMC Details', []),
+                          child: _buildDetailsBlock(
+                              'Basic Details',
+                              [
+                                'Owner',
+                                'Phone No',
+                                'Chassis No',
+                                'Registration Date',
+                                'Vehicles Make',
+                                'Vehicles Model',
+                                'Fuel Type',
+                              ],
+                              showViewMore),
                         ),
-
-                        // Warranty Details
                         Visibility(
-                          visible: warrantyValid, // Replace with your own condition
-                          child: _buildDetailsBlock('Warranty Details', []),
+                          visible: amcValid,
+                          child:
+                              _buildDetailsBlock('AMC Details', [], !amcValid),
                         ),
-
-                        // Servicing Details
                         Visibility(
-                          visible: showViewMore, // Replace with your own condition
-                          child: _buildDetailsBlock('Servicing Details', [
-                            'Last Service Date',
-                            'Last Service Kilometer',
-                          ]),
+                          visible: warrantyValid,
+                          child: _buildDetailsBlock(
+                              'Warranty Details', [], !warrantyValid),
+                        ),
+                        Visibility(
+                          visible: showViewMore,
+                          child: _buildDetailsBlock(
+                              'Servicing Details',
+                              ['Last Service Date', 'Last Service Kilometer'],
+                              showViewMore),
                         ),
                       ],
                     ),
                   ),
-
-                  // Go to Booking Button
                   ElevatedButton(
                     onPressed: () {
                       // Handle go to booking functionality
                     },
-                    child: Text(
-                      'Go To Booking',
-                      style: TextStyle(color: Colors.black),
-                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.yellow,
-                      minimumSize: Size(mediaSize.width * 0.4, mediaSize.width * 0.12),
+                      minimumSize: Size(deviceWidth * 0.4, deviceWidth * 0.12),
+                    ),
+                    child: const Text(
+                      'Go To Booking',
+                      style: TextStyle(color: Colors.black),
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
+      drawer: CustomNavigationDrawer(),
     );
   }
 
-
-  Widget _buildDetailsBlock(String title, List<String> details) {
+  Widget _buildDetailsBlock(String title, List<String> details, bool isValid) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -182,36 +206,51 @@ class _DetailsScreenState extends State<DetailsScreen> {
           children: [
             Text(
               title,
-              style: TextStyle(
-                fontSize: 20,
+              style: const TextStyle(
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            TextButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text(title),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: details.map((detail) => Text(detail)).toList(),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Close'),
-                        ),
-                      ],
+            Row(
+              children: [
+                Text(
+                  title == 'Warranty Details'
+                      ? (isValid ? 'Active' : 'Expired')
+                      : (isValid ? 'Valid' : 'Invalid'),
+                  style: TextStyle(
+                    color: isValid ? Colors.green : Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                TextButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(title),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children:
+                                details.map((detail) => Text(detail)).toList(),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        );
+                      },
                     );
                   },
-                );
-              },
-              child: Text('View More'),
+                  child: const Text('View More'),
+                ),
+              ],
             ),
           ],
         ),
@@ -220,20 +259,19 @@ class _DetailsScreenState extends State<DetailsScreen> {
           children: details
               .map(
                 (detail) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  detail,
-                  style: TextStyle(fontSize: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      detail,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          )
+              )
               .toList(),
         ),
       ],
     );
   }
-
 }
