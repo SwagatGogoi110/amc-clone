@@ -1,3 +1,5 @@
+import 'package:amcdemo/details/amc_details_list.dart';
+import 'package:amcdemo/details/basic_details_list.dart';
 import 'package:amcdemo/widgets/navigation_drawer.dart';
 import 'package:flutter/material.dart';
 
@@ -5,6 +7,7 @@ class DetailsScreen extends StatefulWidget {
   const DetailsScreen({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _DetailsScreenState createState() => _DetailsScreenState();
 }
 
@@ -15,16 +18,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
   bool amcValid = true;
   bool warrantyValid = true;
 
-  late double deviceHeight;
-  late double deviceWidth;
+  double deviceHeight = 0.0;
+  double deviceWidth = 0.0;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
-  @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
       final size = MediaQuery.of(context).size;
       setState(() {
         deviceHeight = size.height;
@@ -35,6 +37,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unnecessary_null_comparison
     if (deviceHeight == null || deviceWidth == null) {
       return Container();
     }
@@ -84,7 +87,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         onPressed: () {
                           _scaffoldKey.currentState!.openDrawer();
                         },
-                        icon: const Icon(Icons.menu, size: 35,),
+                        icon: const Icon(
+                          Icons.menu,
+                          size: 35,
+                        ),
                       ),
                     ],
                   ),
@@ -225,31 +231,60 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 const SizedBox(width: 10),
                 TextButton(
                   onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(title),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children:
-                                details.map((detail) => Text(detail)).toList(),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('Close'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
+                    if (title == 'Basic Details') {
+                      debugPrint("inside");
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return TechSpecPopup();
+                        },
+                      );
+                    } else if(title == 'AMC Details'){
+                      debugPrint("inside2");
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AmcDetailsPopup(chassisNum: chassisController.text,);
+                        },
+                      );
+                    }
                   },
                   child: const Text('View More'),
                 ),
+                // TextButton(
+                //   onPressed: () {
+                //     showDialog(
+                //       context: context,
+                //       builder: (BuildContext context) {
+                //         return AmcDetailsPopup(chassisNum: chassisController.text);
+                //       },
+                //     );
+                //   },
+                //   child: const Text('View More'),
+                // ),
+                // TextButton(
+                //   onPressed: () {
+                //     showDialog(
+                //       context: context,
+                //       builder: (BuildContext context) {
+                //         return TechSpecPopup();
+                //       },
+                //     );
+                //   },
+                //   child: const Text('View More'),
+                // ),
+                // TextButton(
+                //   onPressed: () {
+                //     showDialog(
+                //       context: context,
+                //       builder: (BuildContext context) {
+                //         return CustomAlertDialog.getServicingDetailsAlertDialog(
+                //             context, servicingDetailsList);
+                //       },
+                //     );
+                //   },
+                //   child: const Text('View More'),
+                // ),
               ],
             ),
           ],

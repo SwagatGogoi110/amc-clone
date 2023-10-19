@@ -2,6 +2,7 @@ import 'package:amcdemo/screens/login_page.dart';
 import 'package:flutter/material.dart';
 
 class CustomNavigationDrawer extends StatelessWidget {
+  const CustomNavigationDrawer({super.key});
   final padding = const EdgeInsets.symmetric(horizontal: 20);
   @override
   Widget build(BuildContext context) {
