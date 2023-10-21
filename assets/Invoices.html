@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Invoice</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                padding: 1.2rem;
+            }
+
+            .container {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.2rem;
+            }
+
+            .left-section {
+                flex: 1;
+            }
+
+            .left-section p:nth-child(3) {
+                font-weight: 600;
+            }
+
+            .right-section {
+                flex: 1;
+                text-align: right;
+                margin-top: 1.5rem;
+            }
+
+            .company-logo {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .company-details {
+                text-align: right;
+            }
+            .company-details p, .company-details h2 {
+                margin: 0.2rem;
+            }
+
+            .middle-container {
+                padding: 0.6rem;
+            }
+
+            .service-table {
+                width: 100%;
+                border-collapse: collapse;
+                border-bottom: 1px solid #000000;
+            }
+
+            .service-table th,
+            .service-table td {
+                /* border: 1px solid #000000; */
+                padding: 8px;
+                padding-top: 2px;
+                padding-bottom: 4px;
+                /* text-align: left; */
+            }
+
+            h1 {
+                border-bottom: 2px solid #000000;
+                width: max-content;
+            }
+
+            td {
+                font-weight: 500;
+            }
+
+            .middle-container td:nth-child(1) {
+                font-weight: 600;
+            }
+
+            .middle-container {
+                margin-bottom: 1.2rem;
+                
+            }
+            .Service {
+                text-align: left;
+            }
+            .Under {
+                text-align: center;
+            }
+            .Amount {
+                text-align: right;
+            }
+
+            .total-amount-section {
+                position: absolute;
+                right: 17px;
+                /* width: 160px; */
+                margin-top: 1.2rem;
+                padding-right: 0.5rem;
+                font-weight: 500;
+            }
+
+            .total-amount-section p {
+                margin-top: 0;
+                margin-bottom: 0;
+                padding-right: 0.4rem;
+            }
+
+            .total,
+            .net {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 5px;
+            }
+
+            .total p:nth-child(1) {
+                margin-right: 160px;
+                font-weight: 600;
+            }
+            .cgst,
+            .sgst,
+            .igst {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 5px;
+            }
+
+            .net {
+                border-top: 1px solid #000000;
+                padding-top: 5px;
+            }
+
+            .net p {
+                font-weight: 600;
+            }
+
+            /* .buttonContainer{
+                display: flex;
+                margin: 10px;
+                padding: 10px;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            .button-share{
+                background-color: ;
+                font-size: 12px;
+                border-radius: 8px;
+                padding: 10px;
+            } */
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="left-section">
+                <h1>Tax Invoice</h1>
+                <p>Invoice ID: ABC123</p>
+                <p>Total : Rs.100.00</p>
+            </div>
+            <div class="right-section">
+                <div class="company-details">
+                    <h2>Automovill Technologies Private Limited</h2>
+                    <p>
+                        587, Ground Floor, 18th Cross, 2nd Main, KPC Layout,
+                        Kasavanahalli, Bangalore-35
+                    </p>
+                    <p>GSTIN: 9AANCA9593JIZQ</p>
+                    <p>CIN: IJ7411OKA2015PTC083874</p>
+                    <p>PAN: AANCA9593J</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2nd Section: Middle Container -->
+        <div class="middle-container">
+            <table class="key-value-table">
+                <tr>
+                    <td>Invoice Date:</td>
+                    <td>2023-09-21</td>
+                </tr>
+                <tr>
+                    <td>Email:</td>
+                    <td>support@automovill.com</td>
+                </tr>
+                <tr>
+                    <td>Website:</td>
+                    <td>https://www.automovill.com</td>
+                </tr>
+                <tr>
+                    <td>Chassis Number:</td>
+                    <td>CH12345</td>
+                </tr>
+                <tr>
+                    <td>Vehicle Make:</td>
+                    <td>Fujiyama</td>
+                </tr>
+                <tr>
+                    <td>Vehicle Model:</td>
+                    <td>Spectra</td>
+                </tr>
+                <tr>
+                    <td>KM Driven:</td>
+                    <td>599</td>
+                </tr>
+                <tr>
+                    <td>Workshop Name:</td>
+                    <td>Automovill-workshop02</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 3rd Section: Service and Amount Columns -->
+        <div class="service-table">
+            <table class="service-table">
+                <tr>
+                    <th class="Service">SERVICE</th>
+                    <th class="Under">UNDER</th>
+                    <th class="Amount">AMOUNT</th>
+                </tr>
+                <tr>
+                    <td class="Service">Service 1</td>
+                    <td class="Under">Amc</td>
+                    <td class="Amount">Rs. 50.00</td>
+                </tr>
+                <tr>
+                    <td class="Service">Service 2</td>
+                    <td class="Under">Warranty</td>
+                    <td class="Amount">Rs. 30.00</td>
+                </tr>
+                <!-- Add more services as needed -->
+            </table>
+        </div>
+
+        <!-- 4th Section: Total Amount -->
+        <div class="total-amount-section">
+            <div class="total">
+                <p>Total Taxable Amount(in figure):</p>
+                <p>Rs.1514.00</p>
+            </div>
+            <div class="tax">
+                <p>Total Taxes:</p>
+                <div class="cgst">
+                    <p>CGST:</p>
+                    <p>Rs.10.00</p>
+                </div>
+                <div class="sgst">
+                    <p>SGST:</p>
+                    <p>Rs.10.00</p>
+                </div>
+                <div class="igst">
+                    <p>IGST:</p>
+                    <p>Rs.0.00</p>
+                </div>
+            </div>
+            <div class="net">
+                <p>Net Payable Amount:</p>
+                <p>Rs.90.00</p>
+            </div>
+        </div>
+    </body>
+</html>

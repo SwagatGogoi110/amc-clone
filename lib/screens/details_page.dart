@@ -1,7 +1,14 @@
 import 'package:amcdemo/details/amc_details_list.dart';
-import 'package:amcdemo/details/basic_details_list.dart';
+import 'package:amcdemo/details/service_details_list.dart';
+import 'package:amcdemo/provider/chassisControllerProvider.dart';
+import 'package:amcdemo/screens/next_details/basic_details.dart';
 import 'package:amcdemo/widgets/navigation_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'next_details/amc_details.dart';
+import 'next_details/service_details.dart';
+import 'next_details/warranty_details.dart';
 
 class DetailsScreen extends StatefulWidget {
   const DetailsScreen({Key? key}) : super(key: key);
@@ -12,7 +19,8 @@ class DetailsScreen extends StatefulWidget {
 }
 
 class _DetailsScreenState extends State<DetailsScreen> {
-  TextEditingController chassisController = TextEditingController();
+  late TextEditingController chassisController;
+  late ChassisControllerProvider chassisControllerProvider;
 
   bool showViewMore = true;
   bool amcValid = true;
@@ -26,6 +34,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   void initState() {
     super.initState();
+    chassisController = TextEditingController();
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       final size = MediaQuery.of(context).size;
       setState(() {
@@ -38,6 +47,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
     // ignore: unnecessary_null_comparison
+    var chassisControllerProvider = Provider.of<ChassisControllerProvider>(context);
     if (deviceHeight == null || deviceWidth == null) {
       return Container();
     }
@@ -99,7 +109,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     child: Column(
                       children: [
                         TextFormField(
-                          controller: chassisController,
+                          controller: chassisControllerProvider.controller,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white,
@@ -119,7 +129,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           onPressed: () {
                             // Handle search functionality
                             debugPrint(
-                                "ChassisNumber: ${chassisController.text}");
+                                "ChassisNumber: ${chassisControllerProvider.controller.text}");
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.yellow,
@@ -199,11 +209,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
           ),
         ],
       ),
-      drawer: CustomNavigationDrawer(),
+      drawer: const CustomNavigationDrawer(),
     );
   }
 
   Widget _buildDetailsBlock(String title, List<String> details, bool isValid) {
+    var chassisControllerProvider = Provider.of<ChassisControllerProvider>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -232,59 +243,138 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 TextButton(
                   onPressed: () {
                     if (title == 'Basic Details') {
-                      debugPrint("inside");
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return TechSpecPopup();
-                        },
-                      );
-                    } else if(title == 'AMC Details'){
-                      debugPrint("inside2");
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AmcDetailsPopup(chassisNum: chassisController.text,);
-                        },
-                      );
+                      if (chassisControllerProvider.controller.text.isNotEmpty) {
+                        chassisControllerProvider.setChassisController(chassisControllerProvider.controller.text);
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => BasicDetailsScreen()));
+                      } else {
+                        showDialog<void>(
+                          context: context,
+                          barrierDismissible: false,
+                          // false = user must tap button, true = tap outside dialog
+                          builder: (BuildContext dialogContext) {
+                            return AlertDialog(
+                              title: const Text('Error'),
+                              content: const Text(
+                                  'Please enter the chassis number.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    Navigator.of(dialogContext)
+                                        .pop(); // Dismiss alert dialog
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    } else if (title == 'AMC Details') {
+                      if (chassisControllerProvider.controller.text.isNotEmpty) {
+                        chassisControllerProvider.setChassisController(chassisControllerProvider.controller.text);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AmcDetailsScreen(
+                                chassisNum: chassisControllerProvider.controller.text),
+                          ),
+                        );
+                      } else {
+                        showDialog<void>(
+                          context: context,
+                          barrierDismissible: false,
+                          // false = user must tap button, true = tap outside dialog
+                          builder: (BuildContext dialogContext) {
+                            return AlertDialog(
+                              title: const Text('Error'),
+                              content: const Text(
+                                  'Please enter the chassis number.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    Navigator.of(dialogContext)
+                                        .pop(); // Dismiss alert dialog
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    } else if (title == 'Warranty Details') {
+                      if (chassisControllerProvider.controller.text.isNotEmpty) {
+                        chassisControllerProvider.setChassisController(chassisControllerProvider.controller.text);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WarrantyDetailsScreen(
+                                chassisNum: chassisControllerProvider.controller.text),
+                          ),
+                        );
+                      } else {
+                        showDialog<void>(
+                          context: context,
+                          barrierDismissible: false,
+                          // false = user must tap button, true = tap outside dialog
+                          builder: (BuildContext dialogContext) {
+                            return AlertDialog(
+                              title: const Text('Error'),
+                              content: const Text(
+                                  'Please enter the chassis number.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    Navigator.of(dialogContext)
+                                        .pop(); // Dismiss alert dialog
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    } else {
+                      if (chassisControllerProvider.controller.text.isNotEmpty) {
+                        chassisControllerProvider.setChassisController(chassisControllerProvider.controller.text);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ServiceDetailsScreen(
+                                chassisNum: chassisControllerProvider.controller.text),
+                          ),
+                        );
+                      } else {
+                        showDialog<void>(
+                          context: context,
+                          barrierDismissible: false,
+                          // false = user must tap button, true = tap outside dialog
+                          builder: (BuildContext dialogContext) {
+                            return AlertDialog(
+                              title: const Text('Error'),
+                              content: const Text(
+                                  'Please enter the chassis number.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    Navigator.of(dialogContext)
+                                        .pop(); // Dismiss alert dialog
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     }
                   },
                   child: const Text('View More'),
                 ),
-                // TextButton(
-                //   onPressed: () {
-                //     showDialog(
-                //       context: context,
-                //       builder: (BuildContext context) {
-                //         return AmcDetailsPopup(chassisNum: chassisController.text);
-                //       },
-                //     );
-                //   },
-                //   child: const Text('View More'),
-                // ),
-                // TextButton(
-                //   onPressed: () {
-                //     showDialog(
-                //       context: context,
-                //       builder: (BuildContext context) {
-                //         return TechSpecPopup();
-                //       },
-                //     );
-                //   },
-                //   child: const Text('View More'),
-                // ),
-                // TextButton(
-                //   onPressed: () {
-                //     showDialog(
-                //       context: context,
-                //       builder: (BuildContext context) {
-                //         return CustomAlertDialog.getServicingDetailsAlertDialog(
-                //             context, servicingDetailsList);
-                //       },
-                //     );
-                //   },
-                //   child: const Text('View More'),
-                // ),
               ],
             ),
           ],

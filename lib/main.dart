@@ -1,10 +1,17 @@
-import 'package:amcdemo/screens/details_page.dart';
-import 'package:amcdemo/screens/login_page.dart';
+import 'package:amcdemo/provider/chassisControllerProvider.dart';
 import 'package:amcdemo/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ChassisControllerProvider()),
+      ],
+      child: MyApp(),
+    )
+  );
 }
 
 class MyApp extends StatelessWidget {

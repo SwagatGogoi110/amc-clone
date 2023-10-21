@@ -1,10 +1,10 @@
+import 'package:amcdemo/constants.dart';
 import 'package:flutter/material.dart';
 
 class TechSpecPopup extends StatelessWidget {
   const TechSpecPopup({super.key});
   @override
   Widget build(BuildContext context) {
-
     // Placeholder data
     List<Map<String, String>> techSpecsLeft = [
       {"title": "Rated Power", "value": "100W"},
@@ -42,8 +42,7 @@ class TechSpecPopup extends StatelessWidget {
       {"title": "Battery Warranty", "value": "2 years"},
     ];
 
-    return AlertDialog(
-      content: SingleChildScrollView(
+    return SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -51,9 +50,10 @@ class TechSpecPopup extends StatelessWidget {
             const Text(
               "Technical Specifications",
               style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                color: kPrimaryColor
               ),
             ),
             const SizedBox(height: 20),
@@ -107,9 +107,10 @@ class TechSpecPopup extends StatelessWidget {
             const Text(
               "Performance Specifications",
               style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                color: kPrimaryColor,
               ),
             ),
             const SizedBox(height: 20),
@@ -159,16 +160,7 @@ class TechSpecPopup extends StatelessWidget {
               );
             }).toList(),
           ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Close'),
-        ),
-      ],
+        )
     );
   }
 }
