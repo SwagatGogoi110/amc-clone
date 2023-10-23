@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/invoice/api/pdf_api.dart';
+import '../widgets/invoice/api/pdf_ivoice_api.dart';
+import '../widgets/invoice/model/customer.dart';
+import '../widgets/invoice/model/invoice.dart';
+import '../widgets/invoice/model/supplier.dart';
+
 class ServiceDetailsPopup extends StatelessWidget {
   final String chassisNum;
 
@@ -120,7 +126,24 @@ class ServiceDetailsPopup extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFFFCA2C),
                           ),
-                          onPressed: (){
+                          onPressed: () async {
+                            final date = DateTime.now();
+                            final dueDate = date.add(Duration(days: 7));
+                            debugPrint('dyagdy');
+
+                            final invoice = Invoice(
+                                info: InvoiceInfo(description: 'My description', number: '${DateTime.now().year}-9999', date: date, dueDate: dueDate),
+                                supplier: Supplier(name: 'Sarah Field', address: 'Washington Street', paymentInfo: 'https://paypal.me/sarahfieldzz'),
+                                customer: Customer(name: 'Apple Inc.', address: 'Apple Street, Cupertino, CA 95014'),
+                                items: [
+                                  InvoiceItem(description: 'Coffee', date: DateTime.now(), quantity: 3, vat: 0.19, unitPrice: 5.99)
+                                ]
+                            );
+                            debugPrint('happy');
+                            final pdfFile = await PdfInvoiceApi.generate(invoice);
+                            debugPrint('2');
+                            PdfApi.openFile(pdfFile);
+                            debugPrint('3');
                           },
                           child: const Text('View More'),
                         ),

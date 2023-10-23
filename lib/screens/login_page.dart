@@ -1,5 +1,10 @@
+import 'dart:convert';
+
+import 'package:amcdemo/provider/AuthProvider.dart';
 import 'package:amcdemo/screens/details_page.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,6 +18,57 @@ class _LoginPageState extends State<LoginPage> {
   late Size mediaSize;
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  void signUserIn(BuildContext context) async {
+    String url = 'http://192.168.1.8:8080/api/v1/auth/authenticate';
+    String Username = usernameController.text.trim();
+    String password = passwordController.text.trim();
+
+    Map<String, String> requestBody = {
+      'username': Username,
+      'password': password
+    };
+
+    final res = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> jsonRes = jsonDecode(res.body);
+      final String? jwtToken = jsonRes['token'];
+
+      if (jwtToken != null) {
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        authProvider.setJwtToken(jwtToken);
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => DetailsScreen()));
+      }
+    } else if (res.statusCode == 401) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Authentication Failed"),
+            content: Text('Invalid username or password. PLease try again.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      print('Unexpected status code: ${res.statusCode}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,11 +190,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildLoginButton() {
     return ElevatedButton(
-      onPressed: () {
-        debugPrint("Username: ${usernameController.text}");
-        debugPrint("Password: ${passwordController.text}");
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailsScreen()));
-      },
+      onPressed: () => signUserIn(context),
       style: ElevatedButton.styleFrom(
         shape: const StadiumBorder(),
         elevation: 20,
