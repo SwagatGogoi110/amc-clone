@@ -1,5 +1,6 @@
 import 'package:amcdemo/provider/AuthProvider.dart';
 import 'package:amcdemo/provider/chassisControllerProvider.dart';
+import 'package:amcdemo/screens/booking_page.dart';
 import 'package:amcdemo/screens/splash_screen.dart';
 import 'package:amcdemo/widgets/invoice/invoice_page.dart';
 import 'package:flutter/material.dart';

@@ -1,6 +1,7 @@
 import 'package:amcdemo/details/amc_details_list.dart';
 import 'package:amcdemo/details/service_details_list.dart';
 import 'package:amcdemo/provider/chassisControllerProvider.dart';
+import 'package:amcdemo/screens/booking_page.dart';
 import 'package:amcdemo/screens/next_details/basic_details.dart';
 import 'package:amcdemo/widgets/navigation_drawer.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
     // ignore: unnecessary_null_comparison
-    var chassisControllerProvider = Provider.of<ChassisControllerProvider>(context);
+    var chassisControllerProvider =
+        Provider.of<ChassisControllerProvider>(context);
     if (deviceHeight == null || deviceWidth == null) {
       return Container();
     }
@@ -192,7 +194,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // Handle go to booking functionality
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => BookingPage(),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.yellow,
@@ -214,7 +220,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   Widget _buildDetailsBlock(String title, List<String> details, bool isValid) {
-    var chassisControllerProvider = Provider.of<ChassisControllerProvider>(context);
+    var chassisControllerProvider =
+        Provider.of<ChassisControllerProvider>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -243,8 +250,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 TextButton(
                   onPressed: () {
                     if (title == 'Basic Details') {
-                      if (chassisControllerProvider.controller.text.isNotEmpty) {
-                        chassisControllerProvider.setChassisController(chassisControllerProvider.controller.text);
+                      if (chassisControllerProvider
+                          .controller.text.isNotEmpty) {
+                        chassisControllerProvider.setChassisController(
+                            chassisControllerProvider.controller.text);
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
@@ -273,13 +282,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         );
                       }
                     } else if (title == 'AMC Details') {
-                      if (chassisControllerProvider.controller.text.isNotEmpty) {
-                        chassisControllerProvider.setChassisController(chassisControllerProvider.controller.text);
+                      if (chassisControllerProvider
+                          .controller.text.isNotEmpty) {
+                        chassisControllerProvider.setChassisController(
+                            chassisControllerProvider.controller.text);
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => AmcDetailsScreen(
-                                chassisNum: chassisControllerProvider.controller.text),
+                                chassisNum:
+                                    chassisControllerProvider.controller.text),
                           ),
                         );
                       } else {
@@ -306,13 +318,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         );
                       }
                     } else if (title == 'Warranty Details') {
-                      if (chassisControllerProvider.controller.text.isNotEmpty) {
-                        chassisControllerProvider.setChassisController(chassisControllerProvider.controller.text);
+                      if (chassisControllerProvider
+                          .controller.text.isNotEmpty) {
+                        chassisControllerProvider.setChassisController(
+                            chassisControllerProvider.controller.text);
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => WarrantyDetailsScreen(
-                                chassisNum: chassisControllerProvider.controller.text),
+                                chassisNum:
+                                    chassisControllerProvider.controller.text),
                           ),
                         );
                       } else {
@@ -339,13 +354,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         );
                       }
                     } else {
-                      if (chassisControllerProvider.controller.text.isNotEmpty) {
-                        chassisControllerProvider.setChassisController(chassisControllerProvider.controller.text);
+                      if (chassisControllerProvider
+                          .controller.text.isNotEmpty) {
+                        chassisControllerProvider.setChassisController(
+                            chassisControllerProvider.controller.text);
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => ServiceDetailsScreen(
-                                chassisNum: chassisControllerProvider.controller.text),
+                                chassisNum:
+                                    chassisControllerProvider.controller.text),
                           ),
                         );
                       } else {

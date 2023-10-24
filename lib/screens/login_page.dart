@@ -20,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController = TextEditingController();
 
   void signUserIn(BuildContext context) async {
-    String url = 'http://192.168.1.8:8080/api/v1/auth/authenticate';
+    String url = 'http://192.168.1.3:8080/api/v1/auth/authenticate';
     String Username = usernameController.text.trim();
     String password = passwordController.text.trim();
 
