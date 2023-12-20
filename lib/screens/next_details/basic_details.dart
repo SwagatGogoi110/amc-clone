@@ -1,22 +1,31 @@
 import 'package:amcdemo/details/basic_details_list.dart';
+import 'package:amcdemo/provider/vehicle_details_provider.dart';
 import 'package:amcdemo/screens/details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:amcdemo/constants.dart';
+import 'package:provider/provider.dart';
 
 class BasicDetailsScreen extends StatelessWidget {
+  final String? basicDetailsId;
+
+  const BasicDetailsScreen({Key? key, this.basicDetailsId}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    //final vehicleDetailsProvider = Provider.of<VehicleDetailsProvider>(context);
+    //final vehicleDetails = vehicleDetailsProvider.vehicleDetails;
+
+    print(basicDetailsId);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          padding: EdgeInsets.only(left: kDefaultPadding),
-          icon: Icon(Icons.arrow_back_ios_new),
+          padding: const EdgeInsets.only(left: kDefaultPadding),
+          icon: const Icon(Icons.arrow_back_ios_new),
           color: Colors.black,
           onPressed: (){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailsScreen()));
+            Navigator.pop(context);
           },
         ),
         centerTitle: false,
@@ -25,28 +34,33 @@ class BasicDetailsScreen extends StatelessWidget {
       ),
       backgroundColor: kPrimaryColor,
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/bgYellow.png'),
             fit: BoxFit.cover,
           ),
         ),
-        child: Body(),
+        child: Body(
+          basicDetailsId: basicDetailsId,
+        ),
       ),
     );
   }
 }
 
 class Body extends StatelessWidget {
+  final String? basicDetailsId;
+
+  const Body({Key? key, this.basicDetailsId}) : super(key:key);
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Column(
+    return ListView(
       children: <Widget>[
         Container(
-          padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
+          padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
           height: size.height * 0.8,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: kBackgroundColor,
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(50),
@@ -56,11 +70,13 @@ class Body extends StatelessWidget {
           child: Column(
             children: <Widget>[
               Container(
-                margin: EdgeInsets.symmetric(vertical: kDefaultPadding),
+                margin: const EdgeInsets.symmetric(vertical: kDefaultPadding),
                 height: size.height * 0.75,
                 width: size.width,
                 //color: Colors.black,
-                child: TechSpecPopup(),
+                child: TechSpecPopup(
+                  basicDetailsId: basicDetailsId,
+                ),
               )
             ],
           ),

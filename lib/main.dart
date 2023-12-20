@@ -1,5 +1,6 @@
 import 'package:amcdemo/provider/AuthProvider.dart';
 import 'package:amcdemo/provider/chassisControllerProvider.dart';
+import 'package:amcdemo/provider/vehicle_details_provider.dart';
 import 'package:amcdemo/screens/booking_page.dart';
 import 'package:amcdemo/screens/splash_screen.dart';
 import 'package:amcdemo/widgets/invoice/invoice_page.dart';
@@ -18,6 +19,7 @@ Future main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => ChassisControllerProvider()),
+        ChangeNotifierProvider(create: (context) => VehicleDetailsProvider())
       ],
       child: MyApp(),
     )

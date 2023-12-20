@@ -21,10 +21,7 @@ class AmcDetailsScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back_ios_new),
           color: Colors.white,
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => DetailsScreen()),
-            );
+            Navigator.pop(context);
           },
         ),
         centerTitle: false,

@@ -8,8 +8,7 @@ class AmcDetailsPopup extends StatelessWidget {
   List<Map<String, String>> generateTableData() {
     return [
       {
-        'Scope of Work':
-            'Repair of puncture (in case of non-body/no wheel damage)',
+        'Scope of Work': 'Repair of puncture (in case of non-body/no wheel damage)',
         'Frequency': '2',
         'Details': 'Puncture Repair',
       },

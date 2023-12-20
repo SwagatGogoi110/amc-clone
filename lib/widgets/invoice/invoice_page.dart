@@ -46,7 +46,8 @@ class _InvoicePageState extends State<InvoicePage> {
                       supplier: Supplier(name: 'Sarah Field', address: 'Washington Street', paymentInfo: 'https://paypal.me/sarahfieldzz'),
                       customer: Customer(name: 'Apple Inc.', address: 'Apple Street, Cupertino, CA 95014'),
                       items: [
-                        InvoiceItem(description: 'Coffee', date: DateTime.now(), quantity: 3, vat: 0.19, unitPrice: 5.99)
+                        InvoiceItem(description: 'Option 12', date: DateTime.now(), quantity: 1, vat: 0, unitPrice: 80),
+                        InvoiceItem(description: 'Option 2', date: DateTime.now(), quantity: 1, vat: 0, unitPrice: 100)
                       ]
                   );
                   debugPrint('happy');

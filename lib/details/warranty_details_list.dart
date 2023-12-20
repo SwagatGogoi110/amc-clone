@@ -39,7 +39,7 @@ class WarrantyDetailsPopup extends StatelessWidget {
           ),
           SizedBox(height: 5,),
           Text(
-            'WARRANTY START: 12/10/2023',
+            'WARRANTY START: 12/10/2022',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -49,7 +49,7 @@ class WarrantyDetailsPopup extends StatelessWidget {
           ),
           SizedBox(height: 5,),
           Text(
-            'WARRANTY END: 12/10/2024',
+            'WARRANTY END: 12/10/2023',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:amcdemo/provider/AuthProvider.dart';
 import 'package:amcdemo/screens/details_page.dart';
@@ -19,8 +20,15 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  void bypassSSL() {
+    HttpClient()
+      ..badCertificateCallback =
+          ((X509Certificate cert, String host, int port) => true);
+  }
+
   void signUserIn(BuildContext context) async {
-    String url = 'http://192.168.1.3:8080/api/v1/auth/authenticate';
+    bypassSSL();
+    String url = 'http://192.168.1.2:8080/api/v1/auth/authenticate';
     String Username = usernameController.text.trim();
     String password = passwordController.text.trim();
 
@@ -41,6 +49,7 @@ class _LoginPageState extends State<LoginPage> {
       final Map<String, dynamic> jsonRes = jsonDecode(res.body);
       final String? jwtToken = jsonRes['token'];
 
+      debugPrint(jwtToken);
       if (jwtToken != null) {
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
         authProvider.setJwtToken(jwtToken);
