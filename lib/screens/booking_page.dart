@@ -1,4 +1,5 @@
 import 'package:amcdemo/screens/details_page.dart';
+import 'package:amcdemo/widgets/counter.dart';
 import 'package:flutter/material.dart';
 
 class BookingPage extends StatefulWidget {
@@ -20,6 +21,13 @@ class _BookingPageState extends State<BookingPage> {
     'Option 7',
     'Option 12',
   ];
+
+  Map<String, String> optionToServiceType = {
+    'Option 1': 'AMC',
+    'Option 2': 'Repair',
+    'Option 3': 'AMC',
+    // Add more mappings as needed
+  };
   String? selectedDropDownOption;
 
   Map<String, dynamic> vehicleDetails = {
@@ -51,6 +59,7 @@ class _BookingPageState extends State<BookingPage> {
     super.dispose();
   }
 
+  int quantity = 1;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -162,11 +171,27 @@ class _BookingPageState extends State<BookingPage> {
                                   ),
                                 ],
                               ),
+
+
                           ],
                         ),
                       ),
                     ),
                   ],
+                ),
+                SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 2.0),
+                  child: SimpleCounter(
+                    onChanged: (value){
+                      setState(() {
+                        quantity = value;
+                      });
+                    },
+                    initialValue: quantity,
+                    minValue: 1,
+                    maxValue: 99,
+                  ),
                 ),
                 const SizedBox(height: 20.0),
                 TextField(
@@ -193,8 +218,9 @@ class _BookingPageState extends State<BookingPage> {
                       if (amount != null) {
                         serviceList.add({
                           'Service': selectedScope,
-                          'Under': '0 of 0',
-                          'Amount': amount,
+                          'Under': optionToServiceType[selectedScope] ?? '',
+                          'Quantity': quantity,
+                          'Amount': amount! * quantity,
                         });
                         totalAmount += amount!;
                         selectedScope = initialSelectedScope;
@@ -238,6 +264,16 @@ class _BookingPageState extends State<BookingPage> {
                           ),
                           Expanded(
                             child: Text(
+                              'Quantity',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 22,
+                                  color: Colors.white),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
                               'Amount',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -266,6 +302,14 @@ class _BookingPageState extends State<BookingPage> {
                             Expanded(
                               child: Text(
                                 service['Under'].toString(),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 15),
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                service['Quantity'].toString(),
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                     color: Colors.white, fontSize: 15),
@@ -339,8 +383,9 @@ class _BookingPageState extends State<BookingPage> {
 
     widgets.addAll(
       matchingOptions.map((option) {
+        String serviceType = optionToServiceType[option] ?? '';
         return ListTile(
-          title: Text(option),
+          title: Text('$option - $serviceType'),
           onTap: () {
             setState(() {
               selectedScope = option;
