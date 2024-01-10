@@ -10,14 +10,19 @@ class ServiceDetailsPopup extends StatelessWidget {
   final String chassisNum;
 
   const ServiceDetailsPopup({super.key, required this.chassisNum});
-  List<Map<String, String>> generateTableData() {
+  List<Map<String, dynamic>> generateTableData() {
     return [
       {
         'Date': '23/09/2023',
-        'Services': 'Repair',
-        'Bill Number': 'qoyuwsgoiuwgiogdpiqwduiqwd',
-        'Workshop': 'workshop01',
-        'Total Cost': '500',
+        'Services': [
+          {'name': 'Speedometer', 'price': '699', 'type': 'N/A'},
+          {'name': 'Handle Bar', 'price': '319', 'type': 'N/A'},
+          {'name': 'Seat Rest Cover', 'price': '119', 'type': 'N/A'},
+          {'name': 'Side stand', 'price': '85', 'type': 'N/A'},
+        ],
+        'Bill Number': '00302202309220001',
+        'Workshop': 'workshop04',
+        'Total Cost': '1222.0',
       }, // Add more data as needed
     ];
   }
@@ -98,9 +103,18 @@ class ServiceDetailsPopup extends StatelessWidget {
                     DataCell(
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: Text(generateTableData()[index]['Services']!),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: (generateTableData()[index]['Services'] as List<Map<String, dynamic>>)
+                              .map((service) => Text(
+                            '${service['name']}: \$${service['price']} (${service['type']})',
+                            style: const TextStyle(fontSize: 13),
+                          ))
+                              .toList(),
+                        ),
                       ),
                     ),
+
                     DataCell(
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -134,7 +148,7 @@ class ServiceDetailsPopup extends StatelessWidget {
                             final invoice = Invoice(
                                 info: InvoiceInfo(description: 'My description', number: '${DateTime.now().year}-9999', date: date, dueDate: dueDate),
                                 supplier: Supplier(name: 'Sarah Field', address: 'Washington Street', paymentInfo: 'https://paypal.me/sarahfieldzz'),
-                                customer: Customer(name: 'Apple Inc.', address: 'Apple Street, Cupertino, CA 95014'),
+                                //customer: Customer(name: 'Apple Inc.', address: 'Apple Street, Cupertino, CA 95014'),
                                 items: [
                                   InvoiceItem(description: 'Coffee', date: DateTime.now(), quantity: 3, vat: 0.19, unitPrice: 5.99)
                                 ]

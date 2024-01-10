@@ -1,106 +1,63 @@
+import 'dart:convert';
+
+import 'package:amcdemo/provider/AuthProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
-class AmcDetailsPopup extends StatelessWidget {
+class AmcDetailsPopup extends StatefulWidget {
   final String chassisNum;
-
   const AmcDetailsPopup({super.key, required this.chassisNum});
 
-  List<Map<String, String>> generateTableData() {
-    return [
-      {
-        'Scope of Work': 'Repair of puncture (in case of non-body/no wheel damage)',
-        'Frequency': '2',
-        'Details': 'Puncture Repair',
-      },
-      {
-        'Scope of Work': 'Subjected to MoU between Fujiyama and ETM bikes',
-        'Frequency': '2',
-        'Details': 'Battery Swapping',
-      },
-      {
-        'Scope of Work':
-            'Followings will be Covered:\n- Motor, controller and Battery (AS per the warranty with OEM)\n- Brake shoes - Front and back\n- Suspension - Front and rear\n- Free overhaul (parts chargeable)',
-        'Frequency': '1',
-        'Details': 'Minor Repairs (Mechanical/Electrical)',
-      },
-      {
-        'Scope of Work':
-            'Followings will be Covered:\n- Motor, controller and Battery (AS per the warranty with OEM)\n- Brake shoes - Front and back\n- Suspension - Front and rear\n- Free overhaul (parts chargeable)',
-        'Frequency': '1',
-        'Details': 'Minor Repairs (Mechanical/Electrical)',
-      },
-      {
-        'Scope of Work':
-            'Followings will be Covered:\n- Motor, controller and Battery (AS per the warranty with OEM)\n- Brake shoes - Front and back\n- Suspension - Front and rear\n- Free overhaul (parts chargeable)',
-        'Frequency': '1',
-        'Details': 'Minor Repairs (Mechanical/Electrical)',
-      },
-      {
-        'Scope of Work':
-            'Followings will be Covered:\n- Motor, controller and Battery (AS per the warranty with OEM)\n- Brake shoes - Front and back\n- Suspension - Front and rear\n- Free overhaul (parts chargeable)',
-        'Frequency': '1',
-        'Details': 'Minor Repairs (Mechanical/Electrical)',
-      },
-      {
-        'Scope of Work':
-            'Followings will be Covered:\n- Motor, controller and Battery (AS per the warranty with OEM)\n- Brake shoes - Front and back\n- Suspension - Front and rear\n- Free overhaul (parts chargeable)',
-        'Frequency': '1',
-        'Details': 'Minor Repairs (Mechanical/Electrical)',
-      },
-      {
-        'Scope of Work': 'Subjected to MoU between Fujiyama and ETM bikes',
-        'Frequency': '2',
-        'Details': 'Battery Swapping',
-      },
-      {
-        'Scope of Work':
-            'Repair of puncture (in case of non-body/no wheel damage)',
-        'Frequency': '2',
-        'Details': 'Puncture Repair',
-      },
-      {
-        'Scope of Work': 'Subjected to MoU between Fujiyama and ETM bikes',
-        'Frequency': '2',
-        'Details': 'Battery Swapping',
-      },
-      {
-        'Scope of Work':
-            'Followings will be Covered:\n- Motor, controller and Battery (AS per the warranty with OEM)\n- Brake shoes - Front and back\n- Suspension - Front and rear\n- Free overhaul (parts chargeable)',
-        'Frequency': '1',
-        'Details': 'Minor Repairs (Mechanical/Electrical)',
-      },
-      {
-        'Scope of Work':
-            'Followings will be Covered:\n- Motor, controller and Battery (AS per the warranty with OEM)\n- Brake shoes - Front and back\n- Suspension - Front and rear\n- Free overhaul (parts chargeable)',
-        'Frequency': '1',
-        'Details': 'Minor Repairs (Mechanical/Electrical)',
-      },
-      {
-        'Scope of Work':
-            'Followings will be Covered:\n- Motor, controller and Battery (AS per the warranty with OEM)\n- Brake shoes - Front and back\n- Suspension - Front and rear\n- Free overhaul (parts chargeable)',
-        'Frequency': '1',
-        'Details': 'Minor Repairs (Mechanical/Electrical)',
-      },
-      {
-        'Scope of Work':
-            'Followings will be Covered:\n- Motor, controller and Battery (AS per the warranty with OEM)\n- Brake shoes - Front and back\n- Suspension - Front and rear\n- Free overhaul (parts chargeable)',
-        'Frequency': '1',
-        'Details': 'Minor Repairs (Mechanical/Electrical)',
-      },
-      {
-        'Scope of Work':
-            'Followings will be Covered:\n- Motor, controller and Battery (AS per the warranty with OEM)\n- Brake shoes - Front and back\n- Suspension - Front and rear\n- Free overhaul (parts chargeable)',
-        'Frequency': '1',
-        'Details': 'Minor Repairs (Mechanical/Electrical)',
-      },
-      {
-        'Scope of Work': 'Subjected to MoU between Fujiyama and ETM bikes',
-        'Frequency': '2',
-        'Details': 'Battery Swapping',
-      },
-      // Add more data as needed
-    ];
+  @override
+  State<AmcDetailsPopup> createState() => _AmcDetailsPopupState();
+}
+
+class _AmcDetailsPopupState extends State<AmcDetailsPopup> {
+
+  List<Map<String, dynamic>>? details;
+
+  Future<void> fetchDetails(String chassisNum) async {
+    final apiUrl = 'http://192.168.1.10:8080/api/v1/amc-availability/$chassisNum';
+    print(apiUrl);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final token = authProvider.jwtToken;
+
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final res = await http.get(Uri.parse(apiUrl), headers: headers);
+    final List<dynamic> resData = jsonDecode(res.body);
+
+    print(res.body);
+
+    setState(() {
+      details = resData.cast<Map<String, dynamic>>();
+    });
+
+    print('API response: ${res.body}');
+    print(res.statusCode);
   }
+
+  @override
+  void initState(){
+    super.initState();
+    fetchDetails(widget.chassisNum);
+  }
+
+  List<Map<String, dynamic>> generateTableData() {
+    return details?.map((item) {
+      return {
+        'Scope of Work': item["scopeOfWork"] ?? '',
+        'Frequency': item["frequency"].toString() ?? '',
+        'Details': item["details"] ?? '',
+      };
+    }).toList() ?? [];
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +66,7 @@ class AmcDetailsPopup extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'CHASSIS NUMBER: \n$chassisNum',
+                  'CHASSIS NUMBER: \n${widget.chassisNum}',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

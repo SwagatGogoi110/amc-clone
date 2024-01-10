@@ -1,16 +1,16 @@
-import 'package:amcdemo/widgets/invoice/model/customer.dart';
+import 'package:amcdemo/widgets/invoice/model/Company.dart';
 import 'package:amcdemo/widgets/invoice/model/supplier.dart';
 
 class Invoice {
   final InvoiceInfo info;
   final Supplier supplier;
-  final Customer customer;
+  //final Company company;
   final List<InvoiceItem> items;
 
   const Invoice({
     required this.info,
     required this.supplier,
-    required this.customer,
+    //required this.company,
     required this.items,
   });
 }

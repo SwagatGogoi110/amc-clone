@@ -1,27 +1,62 @@
+import 'dart:convert';
+
+import 'package:amcdemo/provider/AuthProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
-class WarrantyDetailsPopup extends StatelessWidget {
+class WarrantyDetailsPopup extends StatefulWidget {
   final String chassisNum;
+  final String warrantyStart;
+  final String warrantyEnd;
+  const WarrantyDetailsPopup({super.key, required this.chassisNum, required this.warrantyStart, required this.warrantyEnd});
 
-  const WarrantyDetailsPopup({super.key, required this.chassisNum});
-  List<Map<String, String>> generateTableData() {
-    return [
-      {
-        'Scope of Work':
-        'Repair of puncture (in case of non-body/no wheel damage)',
-        'Frequency': '2',
-        'Details': 'Puncture Repair',
-      },
-      {
-        'Scope of Work': 'Subjected to MoU between Fujiyama and ETM bikes',
-        'Frequency': '2',
-        'Details': 'Battery Swapping',
-      }, // Add more data as needed
-    ];
+  @override
+  State<WarrantyDetailsPopup> createState() => _WarrantyDetailsPopupState();
+}
+
+class _WarrantyDetailsPopupState extends State<WarrantyDetailsPopup> {
+
+  List<Map<String, dynamic>>? details;
+
+  Future<void> fetchDetails(String chassisNum) async {
+    final apiUrl = 'http://192.168.1.10:8080/api/v1/warranty-availability/$chassisNum';
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final token = authProvider.jwtToken;
+
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final res = await http.get(Uri.parse(apiUrl), headers: headers);
+    final List<dynamic> resData = jsonDecode(res.body);
+
+    setState(() {
+      details = resData.cast<Map<String, dynamic>>();
+    });
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    fetchDetails(widget.chassisNum);
+  }
+
+  List<Map<String, dynamic>> generateTableData() {
+    return details?.map((item) {
+      return{
+        'Scope of Work': item["scopeOfWork"] ?? '',
+        'Frequency': item["frequency"].toString() ?? '',
+        'Details': item["details"] ?? '',
+      };
+    }).toList() ?? [];
   }
 
   @override
   Widget build(BuildContext context) {
+    print(widget.warrantyStart);
+    print(widget.warrantyEnd);
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -29,7 +64,7 @@ class WarrantyDetailsPopup extends StatelessWidget {
           Text('Warranty Details', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white,),),
           const SizedBox(height: 15),
           Text(
-            'CHASSIS NUMBER: $chassisNum',
+            'CHASSIS NUMBER: ${widget.chassisNum}',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -39,7 +74,7 @@ class WarrantyDetailsPopup extends StatelessWidget {
           ),
           SizedBox(height: 5,),
           Text(
-            'WARRANTY START: 12/10/2022',
+            'WARRANTY START: ${widget.warrantyStart}',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -49,7 +84,7 @@ class WarrantyDetailsPopup extends StatelessWidget {
           ),
           SizedBox(height: 5,),
           Text(
-            'WARRANTY END: 12/10/2023',
+            'WARRANTY END: ${widget.warrantyEnd}',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

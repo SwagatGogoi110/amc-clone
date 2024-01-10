@@ -44,7 +44,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
   void initState() {
     super.initState();
     chassisController = TextEditingController();
-    chassisControllerProvider = Provider.of<ChassisControllerProvider>(context, listen: false);
+    chassisControllerProvider =
+        Provider.of<ChassisControllerProvider>(context, listen: false);
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       final size = MediaQuery.of(context).size;
       setState(() {
@@ -52,7 +53,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
         deviceWidth = size.width;
       });
 
-      if(searchButtonClicked){
+      if (searchButtonClicked) {
         fetchVehicleDetails(chassisControllerProvider.controller.text);
       }
     });
@@ -63,7 +64,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   Future<void> fetchVehicleDetails(String chassisNum) async {
     debugPrint(chassisNum);
-    final apiUrl = 'http://192.168.1.2:8080/api/v1/vehicle/$chassisNum';
+    final apiUrl = 'http://192.168.1.10:8080/api/v1/vehicle/$chassisNum';
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final jwtToken = authProvider.jwtToken;
 
@@ -75,16 +76,18 @@ class _DetailsScreenState extends State<DetailsScreen> {
       'Content-Type': 'application/json',
     };
     final response = await http.get(Uri.parse(apiUrl), headers: headers);
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
-      final vehicleDetailsProvider = Provider.of<VehicleDetailsProvider>(context, listen: false);
+      final vehicleDetailsProvider =
+          Provider.of<VehicleDetailsProvider>(context, listen: false);
       vehicleDetailsProvider.setVehicleDetails(responseData);
       setState(() {
         vehicleDetails = responseData;
         initialVehicleDetails = responseData;
       });
-    }else {
-      print('Failed to fetch vehicle details. Status code: ${response.statusCode}');
+    } else {
+      print(
+          'Failed to fetch vehicle details. Status code: ${response.statusCode}');
       print('Response body: ${response.body}');
     }
     //print('API Response: ${response.body}');
@@ -103,12 +106,37 @@ class _DetailsScreenState extends State<DetailsScreen> {
         vehicleDetails?['fuel_type'] != null;
   }
 
+  bool _isAmcDetailsAvailable(String amcEndDate) {
+    DateTime? endDate = DateTime.tryParse(amcEndDate ?? "");
+    if (endDate == null) {
+      return false;
+    }
+    DateTime currentDate = DateTime.now();
+    return currentDate.isBefore(endDate);
+  }
+
+  bool _isWarrantyDetailsAvailable(String warrantyEndDate) {
+    DateTime? endDate = DateTime.tryParse(warrantyEndDate ?? "");
+    if (endDate == null) {
+      return false;
+    }
+    DateTime currentDate = DateTime.now();
+    return currentDate.isBefore(endDate);
+  }
+
+  bool _isServiceDetailsAvailable() {
+    // Check if service details is not null and all required properties are not null
+    return vehicleDetails != null &&
+        vehicleDetails?['last_service_date'] != null &&
+        vehicleDetails?['last_service_km'] != null;
+  }
+
   @override
   Widget build(BuildContext context) {
     // ignore: unnecessary_null_comparison
     var chassisControllerProvider =
         Provider.of<ChassisControllerProvider>(context);
-    if (deviceHeight == null || deviceWidth == null) {
+    if (deviceWidth == null) {
       return Container();
     }
 
@@ -190,11 +218,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             setState(() {
                               searchButtonClicked = true;
                             });
-                            await fetchVehicleDetails(chassisControllerProvider.controller.text);
-                            if(chassisControllerProvider.controller.text.isNotEmpty){
+                            await fetchVehicleDetails(
+                                chassisControllerProvider.controller.text);
+                            if (chassisControllerProvider
+                                .controller.text.isNotEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Fetched details: ${vehicleDetails?['owner'] ?? "N/A"}'),
+                                  content: Text(
+                                      'Fetched details: ${vehicleDetails?['owner'] ?? "N/A"}'),
                                 ),
                               );
                             } else {
@@ -236,27 +267,36 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         Visibility(
                           visible: showViewMore,
                           child: _buildDetailsBlock(
-                              'Basic Details',
-                              [
-                                'Owner : ${vehicleDetails?['owner']}',
-                                'Phone No : ${vehicleDetails?['phone_num']}',
-                                'Chassis No : ${vehicleDetails?['chassis_num']}',
-                                'Registration Date : ${vehicleDetails?['reg_date']}',
-                                'Vehicles Make : ${vehicleDetails?['make']}',
-                                'Vehicles Model : ${vehicleDetails?['model']}',
-                                'Fuel Type : ${vehicleDetails?['fuel_type']}',
-                              ],
-                              _isBasicDetailsAvailable(),
-                        ),),
+                            'Basic Details',
+                            [
+                              'Owner : ${vehicleDetails?['owner']}',
+                              'Phone No : ${vehicleDetails?['phone_num']}',
+                              'Chassis No : ${vehicleDetails?['chassis_num']}',
+                              'Registration Date : ${vehicleDetails?['reg_date']}',
+                              'Vehicles Make : ${vehicleDetails?['make']}',
+                              'Vehicles Model : ${vehicleDetails?['model']}',
+                              'Fuel Type : ${vehicleDetails?['fuel_type']}',
+                            ],
+                            _isBasicDetailsAvailable(),
+                          ),
+                        ),
                         Visibility(
                           visible: amcValid,
-                          child:
-                              _buildDetailsBlock('AMC Details', [], amcValid),
+                          child: _buildDetailsBlock(
+                              'AMC Details',
+                              [],
+                              _isAmcDetailsAvailable(
+                                  vehicleDetails?['amc_end_date'] as String? ??
+                                      '')),
                         ),
                         Visibility(
                           visible: warrantyValid,
                           child: _buildDetailsBlock(
-                              'Warranty Details', [], warrantyValid),
+                              'Warranty Details',
+                              [],
+                              _isWarrantyDetailsAvailable(
+                                  vehicleDetails?['warranty_end'] as String? ??
+                                      '')),
                         ),
                         Visibility(
                           visible: showViewMore,
@@ -266,7 +306,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 'Last Service Date : ${vehicleDetails?['last_service_date']}',
                                 'Last Service Kilometer : ${vehicleDetails?['last_service_km']}'
                               ],
-                              showViewMore),
+                              _isServiceDetailsAvailable()),
                         ),
                       ],
                     ),
@@ -331,23 +371,29 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   onPressed: () {
                     if (title == 'Basic Details') {
                       if (chassisControllerProvider
-                          .controller.text.isNotEmpty && searchButtonClicked == true) {
+                              .controller.text.isNotEmpty &&
+                          searchButtonClicked == true) {
                         chassisControllerProvider.setChassisController(
                             chassisControllerProvider.controller.text);
-                        String? basicDetailsId = vehicleDetails?['basic_details_id'];
+                        String? basicDetailsId =
+                            vehicleDetails?['basic_details_id'];
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => BasicDetailsScreen(
-                                  basicDetailsId: basicDetailsId,
-                                ),),);
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BasicDetailsScreen(
+                              basicDetailsId: basicDetailsId,
+                            ),
+                          ),
+                        );
                       } else {
                         showDialog<void>(
                           context: context,
                           barrierDismissible: false,
                           // false = user must tap button, true = tap outside dialog
                           builder: (BuildContext dialogContext) {
-                            if(chassisControllerProvider.controller.text.trim().isEmpty){
+                            if (chassisControllerProvider.controller.text
+                                .trim()
+                                .isEmpty) {
                               return AlertDialog(
                                 title: const Text('Error'),
                                 content: const Text(
@@ -365,8 +411,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             } else {
                               return AlertDialog(
                                 title: const Text('Error'),
-                                content: const Text(
-                                    'Please press enter.'),
+                                content: const Text('Please press enter.'),
                                 actions: <Widget>[
                                   TextButton(
                                     child: const Text('OK'),
@@ -383,7 +428,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       }
                     } else if (title == 'AMC Details') {
                       if (chassisControllerProvider
-                          .controller.text.isNotEmpty && searchButtonClicked == true) {
+                              .controller.text.isNotEmpty &&
+                          searchButtonClicked == true) {
                         chassisControllerProvider.setChassisController(
                             chassisControllerProvider.controller.text);
                         Navigator.push(
@@ -419,7 +465,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       }
                     } else if (title == 'Warranty Details') {
                       if (chassisControllerProvider
-                          .controller.text.isNotEmpty && searchButtonClicked == true) {
+                              .controller.text.isNotEmpty &&
+                          searchButtonClicked == true) {
                         chassisControllerProvider.setChassisController(
                             chassisControllerProvider.controller.text);
                         Navigator.push(
@@ -427,7 +474,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           MaterialPageRoute(
                             builder: (context) => WarrantyDetailsScreen(
                                 chassisNum:
-                                    chassisControllerProvider.controller.text),
+                                    chassisControllerProvider.controller.text,
+                                warrantyStart:
+                                    vehicleDetails?['warranty_start']
+                                            as String? ??
+                                        '',
+                                warrantyEnd:
+                                    vehicleDetails?['warranty_end']
+                                            as String? ??
+                                        ''),
                           ),
                         );
                       } else {
@@ -455,7 +510,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       }
                     } else {
                       if (chassisControllerProvider
-                          .controller.text.isNotEmpty && searchButtonClicked == true) {
+                              .controller.text.isNotEmpty &&
+                          searchButtonClicked == true) {
                         chassisControllerProvider.setChassisController(
                             chassisControllerProvider.controller.text);
                         Navigator.push(

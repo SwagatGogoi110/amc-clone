@@ -8,11 +8,15 @@ import '../../details/amc_details_list.dart';
 
 class WarrantyDetailsScreen extends StatelessWidget {
   final String chassisNum;
+  final String warrantyStart;
+  final String warrantyEnd;
 
-  const WarrantyDetailsScreen({Key? key, required this.chassisNum}) : super(key: key);
+  const WarrantyDetailsScreen({Key? key, required this.chassisNum, required this.warrantyStart, required  this.warrantyEnd}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('warrantySS details: $warrantyStart');
+    debugPrint('warrantyEE details: $warrantyEnd');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF243C63),
@@ -22,10 +26,7 @@ class WarrantyDetailsScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back_ios_new),
           color: Colors.white,
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => DetailsScreen()),
-            );
+            Navigator.pop(context);
           },
         ),
         centerTitle: false,
@@ -41,7 +42,7 @@ class WarrantyDetailsScreen extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-        child: Body(chassisNum: chassisNum),
+        child: Body(chassisNum: chassisNum, warrantyStart: warrantyStart, warrantyEnd: warrantyEnd),
       ),
     );
   }
@@ -49,13 +50,18 @@ class WarrantyDetailsScreen extends StatelessWidget {
 
 class Body extends StatelessWidget {
   final String chassisNum;
+  final String warrantyStart;
+  final String warrantyEnd;
 
-  const Body({Key? key, required this.chassisNum}) : super(key: key);
+  const Body({Key? key, required this.chassisNum, required this.warrantyStart, required this.warrantyEnd}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
     String chassis = chassisNum;
     debugPrint('chassisNum: $chassis');
+    debugPrint('warrantyS details: $warrantyStart');
+    debugPrint('warrantyE details: $warrantyEnd');
     Size size = MediaQuery.of(context).size;
     return Column(
       children: <Widget>[
@@ -75,7 +81,7 @@ class Body extends StatelessWidget {
                 margin: EdgeInsets.symmetric(vertical: 10),
                 height: size.height * 0.75,
                 width: size.width,
-                child: WarrantyDetailsPopup(chassisNum: chassisNum),
+                child: WarrantyDetailsPopup(chassisNum: chassisNum, warrantyStart: warrantyStart, warrantyEnd: warrantyEnd,),
               )
             ],
           ),
