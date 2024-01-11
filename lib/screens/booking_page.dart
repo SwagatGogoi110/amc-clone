@@ -24,12 +24,6 @@ class _BookingPageState extends State<BookingPage> {
     'Option 12',
   ];
 
-  Map<String, String> optionToServiceType = {
-    'Option 1': 'AMC',
-    'Option 2': 'Repair',
-    'Option 3': 'AMC',
-    // Add more mappings as needed
-  };
   String? selectedDropDownOption;
 
   Map<String, dynamic> vehicleDetails = {
@@ -385,9 +379,8 @@ class _BookingPageState extends State<BookingPage> {
 
     widgets.addAll(
       matchingOptions.map((option) {
-        String serviceType = optionToServiceType[option] ?? '';
         return ListTile(
-          title: Text('$option - $serviceType'),
+          title: Text(option),
           onTap: () {
             setState(() {
               selectedScope = option;
