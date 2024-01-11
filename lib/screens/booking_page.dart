@@ -1,5 +1,4 @@
 import 'package:amcdemo/screens/details_page.dart';
-import 'package:amcdemo/widgets/counter.dart';
 import 'package:flutter/material.dart';
 
 class BookingPage extends StatefulWidget {
@@ -11,6 +10,9 @@ class BookingPage extends StatefulWidget {
 
 class _BookingPageState extends State<BookingPage> {
   late TextEditingController _amountController = TextEditingController();
+  bool amcSelected = false;
+  bool warrantySelected = false;
+
   List<String> dropDownOptions = [
     'Option 1',
     'Option 2',
@@ -59,7 +61,6 @@ class _BookingPageState extends State<BookingPage> {
     super.dispose();
   }
 
-  int quantity = 1;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -137,7 +138,7 @@ class _BookingPageState extends State<BookingPage> {
                               },
                               child: Container(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 12.0),
+                                const EdgeInsets.symmetric(vertical: 12.0),
                                 child: Text(selectedScope ?? 'Scope of work',
                                     style: TextStyle(
                                         color: selectedScope == null
@@ -162,7 +163,8 @@ class _BookingPageState extends State<BookingPage> {
                                   // ignore: sized_box_for_whitespace
                                   Container(
                                     height:
-                                        200, // Set the maximum height for the options
+                                    200,
+                                    // Set the maximum height for the options
                                     child: ListView(
                                       children: [
                                         ..._buildMatchingOptions(),
@@ -171,29 +173,38 @@ class _BookingPageState extends State<BookingPage> {
                                   ),
                                 ],
                               ),
-
-
                           ],
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 2.0),
-                  child: SimpleCounter(
-                    onChanged: (value){
-                      setState(() {
-                        quantity = value;
-                      });
-                    },
-                    initialValue: quantity,
-                    minValue: 1,
-                    maxValue: 99,
-                  ),
+
+                CheckboxListTile(
+                  title: const Text(
+                    'AMC', style: TextStyle(color: Colors.white),),
+                  value: amcSelected,
+                  onChanged: (value) {
+                    setState(() {
+                      amcSelected = value!;
+                      warrantySelected = !value;
+                      //updateUnderSelection();
+                    });
+                  },
                 ),
-                const SizedBox(height: 20.0),
+                CheckboxListTile(
+                  title: const Text(
+                    'Warranty', style: TextStyle(color: Colors.white),),
+                  value: warrantySelected,
+                  onChanged: (value) {
+                    setState(() {
+                      warrantySelected = value!;
+                      amcSelected = !value;
+                      //updateUnderSelection();
+                    });
+                  },
+                ),
+                const SizedBox(height: 10.0),
                 TextField(
                   controller: _amountController,
                   onChanged: (value) {
@@ -216,12 +227,21 @@ class _BookingPageState extends State<BookingPage> {
                   onPressed: () {
                     setState(() {
                       if (amount != null) {
-                        serviceList.add({
-                          'Service': selectedScope,
-                          'Under': optionToServiceType[selectedScope] ?? '',
-                          'Quantity': quantity,
-                          'Amount': amount! * quantity,
-                        });
+                        if (amcSelected) {
+                          serviceList.add({
+                            'Service': selectedScope,
+                            'Under': 'AMC',
+                            'Amount': amount!,
+                          });
+                        } else if (warrantySelected) {
+                          serviceList.add({
+                            'Service': selectedScope,
+                            'Under': 'Warranty',
+                            'Amount': amount!,
+                          });
+                        } else {
+                          selectedScope = initialSelectedScope;
+                        }
                         totalAmount += amount!;
                         selectedScope = initialSelectedScope;
                         print(_amountController.text);
@@ -230,7 +250,7 @@ class _BookingPageState extends State<BookingPage> {
                     });
                   },
                   style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   child: const Text('Add'),
                 ),
                 const SizedBox(height: 20.0),
@@ -255,16 +275,6 @@ class _BookingPageState extends State<BookingPage> {
                           Expanded(
                             child: Text(
                               'Under',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 22,
-                                  color: Colors.white),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Quantity',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 22,
@@ -302,14 +312,6 @@ class _BookingPageState extends State<BookingPage> {
                             Expanded(
                               child: Text(
                                 service['Under'].toString(),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 15),
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                service['Quantity'].toString(),
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                     color: Colors.white, fontSize: 15),
@@ -355,7 +357,7 @@ class _BookingPageState extends State<BookingPage> {
                 ElevatedButton(
                   onPressed: () {},
                   style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   child: const Text(
                     'Generate Invoice',
                     style: TextStyle(color: Colors.white),
@@ -404,4 +406,5 @@ class _BookingPageState extends State<BookingPage> {
 
     return widgets;
   }
+
 }

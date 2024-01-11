@@ -1,30 +1,89 @@
+import 'dart:convert';
+
+import 'package:amcdemo/provider/AuthProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/invoice/api/pdf_api.dart';
 import '../widgets/invoice/api/pdf_ivoice_api.dart';
-import '../widgets/invoice/model/customer.dart';
 import '../widgets/invoice/model/invoice.dart';
 import '../widgets/invoice/model/supplier.dart';
+import 'package:http/http.dart' as http;
 
-class ServiceDetailsPopup extends StatelessWidget {
+
+class ServiceDetailsPopup extends StatefulWidget {
   final String chassisNum;
 
   const ServiceDetailsPopup({super.key, required this.chassisNum});
+
+  @override
+  State<ServiceDetailsPopup> createState() => _ServiceDetailsPopupState();
+}
+
+class _ServiceDetailsPopupState extends State<ServiceDetailsPopup> {
+
+  List<Map<String, dynamic>>? details;
+
+  Future<void> fetchDetails(String chassisNum) async {
+    final apiUrl = 'https://backendev.automovill.com/api/v1/invoices/$chassisNum';
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final token = authProvider.jwtToken;
+
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final res = await http.get(Uri.parse(apiUrl), headers: headers);
+    final List<dynamic> resData = jsonDecode(res.body);
+
+    setState(() {
+      details = resData.cast<Map<String, dynamic>>();
+    });
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    fetchDetails(widget.chassisNum);
+  }
+
   List<Map<String, dynamic>> generateTableData() {
-    return [
-      {
-        'Date': '23/09/2023',
-        'Services': [
-          {'name': 'Speedometer', 'price': '699', 'type': 'N/A'},
-          {'name': 'Handle Bar', 'price': '319', 'type': 'N/A'},
-          {'name': 'Seat Rest Cover', 'price': '119', 'type': 'N/A'},
-          {'name': 'Side stand', 'price': '85', 'type': 'N/A'},
-        ],
-        'Bill Number': '00302202309220001',
-        'Workshop': 'workshop04',
-        'Total Cost': '1222.0',
-      }, // Add more data as needed
-    ];
+    // return [
+    //   {
+    //     'Date': '23/09/2023',
+    //     'Services': [
+    //       {'name': 'Speedometer', 'price': '699', 'type': 'N/A'},
+    //       {'name': 'Handle Bar', 'price': '319', 'type': 'N/A'},
+    //       {'name': 'Seat Rest Cover', 'price': '119', 'type': 'N/A'},
+    //       {'name': 'Side stand', 'price': '85', 'type': 'N/A'},
+    //     ],
+    //     'Bill Number': '00302202309220001',
+    //     'Workshop': 'workshop04',
+    //     'Total Cost': '1222.0',
+    //   }, // Add more data as needed
+    // ];
+
+    return details?.map((item){
+      List<Map<String, dynamic>> servicesList = [];
+
+      if(item["services"] != null && item["services"] is List){
+        for(var service in item["services"]){
+          servicesList.add({
+            'name': service["name"] ?? '',
+            'price': service["price"] ?? '',
+            'type' : service["type"] ?? '',
+          });
+        }
+      }
+      return{
+        'Date': item["date_of_booking"] ?? '',
+        'Services': servicesList,
+        'Bill Number': item["bill_number"] ?? '',
+        'Workshop': item["workshop_id"] ?? '',
+        'Total Cost': item["total_cost"].toString() ?? '',
+      };
+    }).toList() ?? [];
   }
 
   DataColumn _createDataColumn(String label){
@@ -55,7 +114,7 @@ class ServiceDetailsPopup extends StatelessWidget {
           ),
           const SizedBox(height: 15),
           Text(
-            'Chassis Number: $chassisNum',
+            'Chassis Number: ${widget.chassisNum}',
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

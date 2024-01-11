@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void signUserIn(BuildContext context) async {
     bypassSSL();
-    String url = 'http://192.168.1.10:8080/api/v1/auth/authenticate';
+    String url = 'https://backendev.automovill.com/api/v1/auth/authenticate';
     String Username = usernameController.text.trim();
     String password = passwordController.text.trim();
 

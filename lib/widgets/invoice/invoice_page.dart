@@ -1,7 +1,6 @@
 import 'package:amcdemo/widgets/invoice/api/pdf_api.dart';
 import 'package:amcdemo/widgets/invoice/api/pdf_ivoice_api.dart';
 import 'package:amcdemo/widgets/invoice/button_widget.dart';
-import 'package:amcdemo/widgets/invoice/model/customer.dart';
 import 'package:amcdemo/widgets/invoice/model/invoice.dart';
 import 'package:amcdemo/widgets/invoice/model/supplier.dart';
 import 'package:amcdemo/widgets/invoice/title_widget.dart';

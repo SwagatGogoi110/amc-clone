@@ -26,6 +26,7 @@ class DetailsScreen extends StatefulWidget {
 
 class _DetailsScreenState extends State<DetailsScreen> {
   late TextEditingController chassisController;
+  late TextEditingController regController;
   late ChassisControllerProvider chassisControllerProvider;
 
   String? jwtToken;
@@ -44,6 +45,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   void initState() {
     super.initState();
     chassisController = TextEditingController();
+    regController = TextEditingController();
     chassisControllerProvider =
         Provider.of<ChassisControllerProvider>(context, listen: false);
     WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -54,7 +56,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
       });
 
       if (searchButtonClicked) {
-        fetchVehicleDetails(chassisControllerProvider.controller.text);
+        fetchVehicleDetails(
+            chassisControllerProvider.controller.text, regController.text);
       }
     });
   }
@@ -62,9 +65,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Map<String, dynamic>? vehicleDetails;
   Map<String, dynamic>? initialVehicleDetails;
 
-  Future<void> fetchVehicleDetails(String chassisNum) async {
+  Future<void> fetchVehicleDetails(String chassisNum, String regNo) async {
     debugPrint(chassisNum);
-    final apiUrl = 'http://192.168.1.10:8080/api/v1/vehicle/$chassisNum';
+    debugPrint(regNo);
+    final apiUrl =
+        'https://backendev.automovill.com/api/v1/vehicle/$chassisNum/${regNo.isNotEmpty ? regNo : 'NA'}';
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final jwtToken = authProvider.jwtToken;
 
@@ -213,13 +218,34 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             ),
                           ),
                         ),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          controller: regController,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            hintText:
+                                'Enter Vehicle Registration Number (Optional)',
+                            contentPadding: const EdgeInsets.all(15),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(color: Colors.blue),
+                            ),
+                          ),
+                        ),
                         ElevatedButton(
                           onPressed: () async {
                             setState(() {
                               searchButtonClicked = true;
                             });
                             await fetchVehicleDetails(
-                                chassisControllerProvider.controller.text);
+                              chassisControllerProvider.controller.text,
+                              regController.text,
+                            );
                             if (chassisControllerProvider
                                 .controller.text.isNotEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -475,14 +501,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             builder: (context) => WarrantyDetailsScreen(
                                 chassisNum:
                                     chassisControllerProvider.controller.text,
-                                warrantyStart:
-                                    vehicleDetails?['warranty_start']
-                                            as String? ??
-                                        '',
-                                warrantyEnd:
-                                    vehicleDetails?['warranty_end']
-                                            as String? ??
-                                        ''),
+                                warrantyStart: vehicleDetails?['warranty_start']
+                                        as String? ??
+                                    '',
+                                warrantyEnd: vehicleDetails?['warranty_end']
+                                        as String? ??
+                                    ''),
                           ),
                         );
                       } else {

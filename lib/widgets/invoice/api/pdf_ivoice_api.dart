@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../model/Company.dart';
 import '../model/invoice.dart';
-import '../model/customer.dart';
 import '../model/supplier.dart';
 import 'package:pdf/widgets.dart';
 import 'package:pdf/pdf.dart';

@@ -20,7 +20,7 @@ class _WarrantyDetailsPopupState extends State<WarrantyDetailsPopup> {
   List<Map<String, dynamic>>? details;
 
   Future<void> fetchDetails(String chassisNum) async {
-    final apiUrl = 'http://192.168.1.10:8080/api/v1/warranty-availability/$chassisNum';
+    final apiUrl = 'https://backendev.automovill.com/api/v1/warranty-availability/$chassisNum';
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final token = authProvider.jwtToken;
 

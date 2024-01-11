@@ -19,7 +19,7 @@ class _TechSpecPopupState extends State<TechSpecPopup> {
   Map<String, dynamic>? specs;
 
   Future<void> fetchSpecs(String id) async {
-    final apiUrl = 'http://192.168.1.10:8080/api/v1/basic/$id';
+    final apiUrl = 'https://backendev.automovill.com/api/v1/basic/$id';
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final token = authProvider.jwtToken;
 
