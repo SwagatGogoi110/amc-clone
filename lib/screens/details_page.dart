@@ -339,11 +339,24 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => BookingPage(),
-                        ),
-                      );
+                      if(chassisControllerProvider
+                          .controller.text.isNotEmpty &&
+                          searchButtonClicked == true) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                BookingPage(
+                                  chassisNum: chassisControllerProvider
+                                      .controller.text,
+                                  vehicleMake: vehicleDetails?['make'],
+                                  vehicleModel: vehicleDetails?['model'],
+                                  fuelType: vehicleDetails?['fuel_type'],
+                                  lastServiceDate: vehicleDetails?['last_service_date'],
+                                  lastServiceKm: vehicleDetails?['last_service_km'],
+                                ),
+                          ),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.yellow,
@@ -543,7 +556,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           MaterialPageRoute(
                             builder: (context) => ServiceDetailsScreen(
                                 chassisNum:
-                                    chassisControllerProvider.controller.text),
+                                    chassisControllerProvider.controller.text, vehicleMake: vehicleDetails?['make'],
+                                vehicleModel: vehicleDetails?['model']),
                           ),
                         );
                       } else {

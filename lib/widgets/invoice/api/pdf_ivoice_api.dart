@@ -56,7 +56,7 @@ class PdfInvoiceApi {
                 width: 50,
                 child: BarcodeWidget(
                   barcode: Barcode.qrCode(),
-                  data: invoice.info.number,
+                  data: 'invoice.info.number',
                 ),
               ),
             ],
@@ -99,13 +99,13 @@ class PdfInvoiceApi {
       'Workshop:',
     ];
     final data = <String>[
-      info.number,
-      Utils.formatDate(info.date),
-      'CH12345',
-      'FUJIYAMA',
-      'SPECTRA',
-      '599',
-      'Automovill-workshop02',
+      info.number!,
+      info.date,
+      info.chassisNum,
+      info.vMake,
+      info.vModel,
+      info.kmDrive,
+      info.workshop!,
     ];
 
     return Column(
@@ -136,22 +136,22 @@ class PdfInvoiceApi {
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 0.8 * PdfPageFormat.cm),
-          Text(invoice.info.description),
           SizedBox(height: 0.8 * PdfPageFormat.cm),
         ],
       );
 
   static Widget buildInvoice(Invoice invoice) {
-    final headers = ['Description', 'Date', 'Quantity', 'Unit Price', 'Total'];
+    final headers = ['Description', 'Date', 'Under', 'Unit Price', 'Total'];
     final data = invoice.items.map((item) {
-      final total = item.unitPrice * item.quantity * (1 + item.vat);
+      //final total = item.unitPrice * (1 + item.vat);
 
       return [
         item.description,
-        Utils.formatDate(item.date),
-        '${item.quantity}',
-        '\Rs ${item.unitPrice}',
-        '\Rs ${total.toStringAsFixed(2)}',
+        item.date,
+        item.under,
+        'Rs ${item.unitPrice}',
+        'Rs ${item.unitPrice}',
+        //'\Rs ${total.toStringAsFixed(2)}',
       ];
     }).toList();
 
@@ -176,10 +176,10 @@ class PdfInvoiceApi {
   static Widget buildTotal(Invoice invoice) {
     //Calculation of tax will be done here
     final netTotal = invoice.items
-        .map((item) => item.unitPrice * item.quantity)
+        .map<double>((item) => item.unitPrice)
         .reduce((item1, item2) => item1 + item2);
-    final gstPercent = invoice.items.first.vat;
-    final gst = netTotal * gstPercent;
+    //final gstPercent = invoice.items.first.unitPrice;
+    final gst = netTotal * 0.18;
     final total = netTotal + gst;
 
     return Container(
@@ -198,17 +198,17 @@ class PdfInvoiceApi {
                   unite: true,
                 ),
                 buildText(
-                  title: 'CGST ${gstPercent * 100} %',
+                  title: 'CGST ${18} %',
                   value: Utils.formatPrice(gst),
                   unite: true,
                 ),
                 buildText(
-                  title: 'SGST ${gstPercent * 100} %',
+                  title: 'SGST ${18} %',
                   value: Utils.formatPrice(gst),
                   unite: true,
                 ),
                 buildText(
-                  title: 'IGST ${gstPercent * 100} %',
+                  title: 'IGST ${18} %',
                   value: Utils.formatPrice(gst),
                   unite: true,
                 ),

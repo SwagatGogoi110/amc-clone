@@ -5,8 +5,11 @@ import '../../details/service_details_list.dart';
 
 class ServiceDetailsScreen extends StatelessWidget {
   final String chassisNum;
+  final String vehicleMake;
+  final String vehicleModel;
 
-  const ServiceDetailsScreen({Key? key, required this.chassisNum}) : super(key: key);
+  const ServiceDetailsScreen({Key? key, required this.chassisNum, required this.vehicleMake, required this.vehicleModel})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +22,7 @@ class ServiceDetailsScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back_ios_new),
           color: Colors.white,
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => DetailsScreen()),
-            );
+            Navigator.pop(context);
           },
         ),
         centerTitle: false,
@@ -38,7 +38,7 @@ class ServiceDetailsScreen extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-        child: Body(chassisNum: chassisNum),
+        child: Body(chassisNum: chassisNum, vehicleMake: vehicleMake, vehicleModel: vehicleModel),
       ),
     );
   }
@@ -46,8 +46,10 @@ class ServiceDetailsScreen extends StatelessWidget {
 
 class Body extends StatelessWidget {
   final String chassisNum;
+  final String vehicleMake;
+  final String vehicleModel;
 
-  const Body({Key? key, required this.chassisNum}) : super(key: key);
+  const Body({Key? key, required this.chassisNum, required this.vehicleMake, required this.vehicleModel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +74,7 @@ class Body extends StatelessWidget {
                 margin: EdgeInsets.symmetric(vertical: 10),
                 height: size.height * 0.75,
                 width: size.width,
-                child: ServiceDetailsPopup(chassisNum: chassisNum),
+                child: ServiceDetailsPopup(chassisNum: chassisNum, vehicleMake: vehicleMake, vehicleModel: vehicleModel,),
               )
             ],
           ),

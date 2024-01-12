@@ -2,30 +2,32 @@ import 'dart:convert';
 
 import 'package:amcdemo/provider/AuthProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 import '../widgets/invoice/api/pdf_api.dart';
 import '../widgets/invoice/api/pdf_ivoice_api.dart';
 import '../widgets/invoice/model/invoice.dart';
-import '../widgets/invoice/model/supplier.dart';
-import 'package:http/http.dart' as http;
-
 
 class ServiceDetailsPopup extends StatefulWidget {
   final String chassisNum;
+  final String vehicleMake;
+  final String vehicleModel;
 
-  const ServiceDetailsPopup({super.key, required this.chassisNum});
+  const ServiceDetailsPopup({Key? key, required this.chassisNum, required this.vehicleMake, required this.vehicleModel})
+      : super(key: key);
 
   @override
   State<ServiceDetailsPopup> createState() => _ServiceDetailsPopupState();
 }
 
 class _ServiceDetailsPopupState extends State<ServiceDetailsPopup> {
-
   List<Map<String, dynamic>>? details;
 
   Future<void> fetchDetails(String chassisNum) async {
-    final apiUrl = 'https://backendev.automovill.com/api/v1/invoices/$chassisNum';
+    final apiUrl =
+        'https://backendev.automovill.com/api/v1/invoices/$chassisNum';
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final token = authProvider.jwtToken;
 
@@ -37,65 +39,89 @@ class _ServiceDetailsPopupState extends State<ServiceDetailsPopup> {
     final res = await http.get(Uri.parse(apiUrl), headers: headers);
     final List<dynamic> resData = jsonDecode(res.body);
 
-    setState(() {
-      details = resData.cast<Map<String, dynamic>>();
-    });
-  }
-
-  @override
-  void initState(){
-    super.initState();
-    fetchDetails(widget.chassisNum);
+    if (details == null) {
+      setState(() {
+        details = resData.cast<Map<String, dynamic>>();
+      });
+    }
+    print(resData);
   }
 
   List<Map<String, dynamic>> generateTableData() {
-    // return [
-    //   {
-    //     'Date': '23/09/2023',
-    //     'Services': [
-    //       {'name': 'Speedometer', 'price': '699', 'type': 'N/A'},
-    //       {'name': 'Handle Bar', 'price': '319', 'type': 'N/A'},
-    //       {'name': 'Seat Rest Cover', 'price': '119', 'type': 'N/A'},
-    //       {'name': 'Side stand', 'price': '85', 'type': 'N/A'},
-    //     ],
-    //     'Bill Number': '00302202309220001',
-    //     'Workshop': 'workshop04',
-    //     'Total Cost': '1222.0',
-    //   }, // Add more data as needed
-    // ];
-
-    return details?.map((item){
+    return details?.map((item) {
       List<Map<String, dynamic>> servicesList = [];
 
-      if(item["services"] != null && item["services"] is List){
-        for(var service in item["services"]){
+      if (item["services"] != null && item["services"] is List) {
+        for (var service in item["services"]) {
           servicesList.add({
             'name': service["name"] ?? '',
             'price': service["price"] ?? '',
-            'type' : service["type"] ?? '',
+            'type': service["type"] ?? '',
           });
         }
       }
-      return{
+      return {
         'Date': item["date_of_booking"] ?? '',
         'Services': servicesList,
         'Bill Number': item["bill_number"] ?? '',
+        'Distance Travelled': item["distance_travelled"] ?? '',
         'Workshop': item["workshop_id"] ?? '',
         'Total Cost': item["total_cost"].toString() ?? '',
       };
-    }).toList() ?? [];
+    }).toList() ??
+        [];
   }
 
-  DataColumn _createDataColumn(String label){
+  DataColumn _createDataColumn(String label) {
     return DataColumn(
       label: Text(
         label,
-        style: const TextStyle(
-            fontSize: 18
-        ),
+        style: const TextStyle(fontSize: 18),
         textAlign: TextAlign.center,
       ),
     );
+  }
+
+  Future<void> generateIndividualInvoice(
+      BuildContext context, Map<String, dynamic> data) async {
+    final List<Map<String, dynamic>> servicesList = data['Services'] ?? [];
+
+    final invoice = Invoice(
+      info: InvoiceInfo(
+        number: data['Bill Number'] as String? ?? '',
+        date: data['Date'] as String? ?? '',
+        chassisNum: widget.chassisNum,
+        vMake: widget.vehicleMake,
+        vModel: widget.vehicleModel,
+        kmDrive: data['Distance Travelled'].toString() ?? '',
+        workshop: data['Workshop'] as String? ?? '',
+      ),
+      items: servicesList.map((service) {
+        return InvoiceItem(
+          description: service['name'] as String? ?? '',
+          date: data['Date'] as String? ?? '', // Use 'Date' or provide another appropriate date if needed
+          under: service['type'] as String? ?? '',
+          unitPrice: double.parse(service['price'].toString() as String? ?? '0.0'),
+        );
+      }).toList(),
+    );
+
+    print('Data received: $data');
+    print(data['Distance Travelled'].toString());
+
+    print('Invoice generated: $invoice');
+
+
+    final pdfFile = await PdfInvoiceApi.generate(invoice);
+    PdfApi.openFile(pdfFile);
+  }
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDetails(widget.chassisNum);
   }
 
   @override
@@ -129,9 +155,9 @@ class _ServiceDetailsPopupState extends State<ServiceDetailsPopup> {
             scrollDirection: Axis.horizontal,
             child: DataTable(
               headingRowColor: MaterialStateColor.resolveWith(
-                  (states) => Colors.grey.shade300),
+                      (states) => Colors.grey.shade300),
               dataRowColor: MaterialStateColor.resolveWith(
-                  (states) => Colors.grey.shade100),
+                      (states) => Colors.grey.shade100),
               headingTextStyle: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
@@ -140,7 +166,7 @@ class _ServiceDetailsPopupState extends State<ServiceDetailsPopup> {
                 color: Colors.black,
               ),
               columnSpacing: 20.0,
-              dataRowMaxHeight: 100,
+              dataRowMaxHeight: 120,
               columns: <DataColumn>[
                 _createDataColumn('Date'),
                 _createDataColumn('Services'),
@@ -151,7 +177,7 @@ class _ServiceDetailsPopupState extends State<ServiceDetailsPopup> {
               ],
               rows: List<DataRow>.generate(
                 generateTableData().length,
-                (index) => DataRow(
+                    (index) => DataRow(
                   cells: [
                     DataCell(
                       Padding(
@@ -164,7 +190,8 @@ class _ServiceDetailsPopupState extends State<ServiceDetailsPopup> {
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: (generateTableData()[index]['Services'] as List<Map<String, dynamic>>)
+                          children:
+                          (generateTableData()[index]['Services'] as List<Map<String, dynamic>>)
                               .map((service) => Text(
                             '${service['name']}: \$${service['price']} (${service['type']})',
                             style: const TextStyle(fontSize: 13),
@@ -200,23 +227,8 @@ class _ServiceDetailsPopupState extends State<ServiceDetailsPopup> {
                             backgroundColor: const Color(0xFFFFCA2C),
                           ),
                           onPressed: () async {
-                            final date = DateTime.now();
-                            final dueDate = date.add(Duration(days: 7));
-                            debugPrint('dyagdy');
-
-                            final invoice = Invoice(
-                                info: InvoiceInfo(description: 'My description', number: '${DateTime.now().year}-9999', date: date, dueDate: dueDate),
-                                supplier: Supplier(name: 'Sarah Field', address: 'Washington Street', paymentInfo: 'https://paypal.me/sarahfieldzz'),
-                                //customer: Customer(name: 'Apple Inc.', address: 'Apple Street, Cupertino, CA 95014'),
-                                items: [
-                                  InvoiceItem(description: 'Coffee', date: DateTime.now(), quantity: 3, vat: 0.19, unitPrice: 5.99)
-                                ]
-                            );
-                            debugPrint('happy');
-                            final pdfFile = await PdfInvoiceApi.generate(invoice);
-                            debugPrint('2');
-                            PdfApi.openFile(pdfFile);
-                            debugPrint('3');
+                            generateIndividualInvoice(
+                                context, generateTableData()[index]);
                           },
                           child: const Text('View More'),
                         ),
