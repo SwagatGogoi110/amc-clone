@@ -46,6 +46,7 @@ dependencies:
   dropdown_search: ^5.0.6
   searchfield: ^0.8.6
   google_fonts: ^6.1.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

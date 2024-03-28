@@ -193,7 +193,7 @@ class _ServiceDetailsPopupState extends State<ServiceDetailsPopup> {
                           children:
                           (generateTableData()[index]['Services'] as List<Map<String, dynamic>>)
                               .map((service) => Text(
-                            '${service['name']}: \$${service['price']} (${service['type']})',
+                            '${service['name']}: Rs ${service['price']} (${service['type']})',
                             style: const TextStyle(fontSize: 13),
                           ))
                               .toList(),

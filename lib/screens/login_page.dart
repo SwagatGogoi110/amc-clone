@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:amcdemo/provider/AuthProvider.dart';
+import 'package:amcdemo/provider/WorkshopProvider.dart';
 import 'package:amcdemo/screens/details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -24,6 +25,15 @@ class _LoginPageState extends State<LoginPage> {
     HttpClient()
       ..badCertificateCallback =
           ((X509Certificate cert, String host, int port) => true);
+  }
+
+  Map<String, dynamic> decodePayload(String token){
+    List<String> tokenParts = token.split('.');
+    String payload = tokenParts[1];
+    while(payload.length % 4 != 0){ payload += '='; }
+    String decodeJwtPayload = utf8.decode(base64Url.decode(payload));
+    Map<String, dynamic> payloadMap = json.decode(decodeJwtPayload);
+    return payloadMap;
   }
 
   void signUserIn(BuildContext context) async {
@@ -51,8 +61,17 @@ class _LoginPageState extends State<LoginPage> {
 
       debugPrint(jwtToken);
       if (jwtToken != null) {
+
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
         authProvider.setJwtToken(jwtToken);
+
+        Map<String, dynamic> extractSub = decodePayload(jwtToken);
+        String workshopID = extractSub['sub'];
+        print('Sub value: $workshopID');
+
+        final workshopProvider = Provider.of<WorkshopProvider>(context, listen: false);
+        workshopProvider.setSubValue(workshopID);
+
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => DetailsScreen()));
       }
