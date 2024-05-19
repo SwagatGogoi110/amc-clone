@@ -178,196 +178,182 @@ class _DetailsScreenState extends State<DetailsScreen> {
             top: deviceHeight * 0.1,
             left: 0,
             right: 0,
+            bottom: 0, // Set bottom to 0 to allow scrolling
             child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          _scaffoldKey.currentState!.openDrawer();
-                        },
-                        icon: const Icon(
-                          Icons.menu,
-                          size: 35,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(deviceHeight * 0.01),
-                    child: Column(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: deviceHeight * 0.5), // Ensure space for bottom container
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        TextFormField(
-                          controller: chassisControllerProvider.controller,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white,
-                            hintText: 'Enter Vehicle Chassis Number',
-                            contentPadding: const EdgeInsets.all(15),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(color: Colors.blue),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        TextFormField(
-                          controller: regController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white,
-                            hintText:
-                                'Enter Vehicle Registration Number (Optional)',
-                            contentPadding: const EdgeInsets.all(15),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(color: Colors.blue),
-                            ),
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            setState(() {
-                              searchButtonClicked = true;
-                            });
-                            await fetchVehicleDetails(
-                              chassisControllerProvider.controller.text,
-                              regController.text,
-                            );
-                            if (chassisControllerProvider
-                                .controller.text.isNotEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                      'Fetched details: ${vehicleDetails?['owner'] ?? "N/A"}'),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Fetched details : N/A'),
-                                ),
-                              );
-                            }
-
-                            // Handle search functionality
-                            debugPrint(
-                                "ChassisNumber: ${chassisControllerProvider.controller.text}");
+                        IconButton(
+                          onPressed: () {
+                            _scaffoldKey.currentState!.openDrawer();
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.yellow,
-                          ),
-                          child: const Text(
-                            'Search',
-                            style: TextStyle(color: Colors.black),
+                          icon: const Icon(
+                            Icons.menu,
+                            size: 35,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    width: deviceWidth * 0.8,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 10),
-                    margin: EdgeInsets.only(
-                        top: deviceHeight * 0.03, bottom: deviceHeight * 0.015),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Visibility(
-                          visible: showViewMore,
-                          child: _buildDetailsBlock(
-                            'Basic Details',
-                            [
-                              'Owner : ${vehicleDetails?['owner']}',
-                              'Phone No : ${vehicleDetails?['phone_num']}',
-                              'Chassis No : ${vehicleDetails?['chassis_num']}',
-                              'Registration Date : ${vehicleDetails?['reg_date']}',
-                              'Vehicles Make : ${vehicleDetails?['make']}',
-                              'Vehicles Model : ${vehicleDetails?['model']}',
-                              'Fuel Type : ${vehicleDetails?['fuel_type']}',
-                            ],
-                            _isBasicDetailsAvailable(),
+                    Padding(
+                      padding: EdgeInsets.all(deviceHeight * 0.01),
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: chassisControllerProvider.controller,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              hintText: 'Enter Vehicle Chassis Number',
+                              contentPadding: const EdgeInsets.all(15),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(color: Colors.blue),
+                              ),
+                            ),
                           ),
-                        ),
-                        Visibility(
-                          visible: amcValid,
-                          child: _buildDetailsBlock(
-                              'AMC Details',
-                              [],
-                              _isAmcDetailsAvailable(
-                                  vehicleDetails?['amc_end_date'] as String? ??
-                                      '')),
-                        ),
-                        Visibility(
-                          visible: warrantyValid,
-                          child: _buildDetailsBlock(
-                              'Warranty Details',
-                              [],
-                              _isWarrantyDetailsAvailable(
-                                  vehicleDetails?['warranty_end'] as String? ??
-                                      '')),
-                        ),
-                        Visibility(
-                          visible: showViewMore,
-                          child: _buildDetailsBlock(
-                              'Servicing Details',
+                          SizedBox(height: 20),
+                          TextFormField(
+                            controller: regController,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              hintText: 'Enter Vehicle Registration Number (Optional)',
+                              contentPadding: const EdgeInsets.all(15),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(color: Colors.blue),
+                              ),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              setState(() {
+                                searchButtonClicked = true;
+                              });
+                              await fetchVehicleDetails(
+                                chassisControllerProvider.controller.text,
+                                regController.text,
+                              );
+                              if (chassisControllerProvider.controller.text.isNotEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'Fetched details: ${vehicleDetails?['owner'] ?? "N/A"}'),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Fetched details : N/A'),
+                                  ),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.yellow,
+                            ),
+                            child: const Text(
+                              'Search',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      width: deviceWidth * 0.8,
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      margin: EdgeInsets.only(top: deviceHeight * 0.03, bottom: deviceHeight * 0.015),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Visibility(
+                            visible: showViewMore,
+                            child: _buildDetailsBlock(
+                              'Basic Details',
                               [
-                                'Last Service Date : ${vehicleDetails?['last_service_date']}',
-                                'Last Service Kilometer : ${vehicleDetails?['last_service_km']}'
+                                'Owner : ${vehicleDetails?['owner']}',
+                                'Phone No : ${vehicleDetails?['phone_num']}',
+                                'Chassis No : ${vehicleDetails?['chassis_num']}',
+                                'Registration Date : ${vehicleDetails?['reg_date']}',
+                                'Vehicles Make : ${vehicleDetails?['make']}',
+                                'Vehicles Model : ${vehicleDetails?['model']}',
+                                'Fuel Type : ${vehicleDetails?['fuel_type']}',
                               ],
-                              _isServiceDetailsAvailable()),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if(chassisControllerProvider
-                          .controller.text.isNotEmpty &&
-                          searchButtonClicked == true) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                BookingPage(
-                                  chassisNum: chassisControllerProvider
-                                      .controller.text,
-                                  vehicleMake: vehicleDetails?['make'],
-                                  vehicleModel: vehicleDetails?['model'],
-                                  fuelType: vehicleDetails?['fuel_type'],
-                                  lastServiceDate: vehicleDetails?['last_service_date'],
-                                  lastServiceKm: vehicleDetails?['last_service_km'],
-                                ),
+                              _isBasicDetailsAvailable(),
+                            ),
                           ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.yellow,
-                      minimumSize: Size(deviceWidth * 0.4, deviceWidth * 0.12),
+                          Visibility(
+                            visible: amcValid,
+                            child: _buildDetailsBlock(
+                                'AMC Details',
+                                [],
+                                _isAmcDetailsAvailable(vehicleDetails?['amc_end_date'] as String? ?? '')),
+                          ),
+                          Visibility(
+                            visible: warrantyValid,
+                            child: _buildDetailsBlock(
+                                'Warranty Details',
+                                [],
+                                _isWarrantyDetailsAvailable(vehicleDetails?['warranty_end'] as String? ?? '')),
+                          ),
+                          Visibility(
+                            visible: showViewMore,
+                            child: _buildDetailsBlock(
+                                'Servicing Details',
+                                [
+                                  'Last Service Date : ${vehicleDetails?['last_service_date']}',
+                                  'Last Service Kilometer : ${vehicleDetails?['last_service_km']}'
+                                ],
+                                _isServiceDetailsAvailable()),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: const Text(
-                      'Go To Booking',
-                      style: TextStyle(color: Colors.black),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (chassisControllerProvider.controller.text.isNotEmpty && searchButtonClicked == true) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => BookingPage(
+                                chassisNum: chassisControllerProvider.controller.text,
+                                vehicleMake: vehicleDetails?['make'],
+                                vehicleModel: vehicleDetails?['model'],
+                                fuelType: vehicleDetails?['fuel_type'],
+                                lastServiceDate: vehicleDetails?['last_service_date'],
+                                lastServiceKm: vehicleDetails?['last_service_km'],
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.yellow,
+                        minimumSize: Size(deviceWidth * 0.4, deviceWidth * 0.12),
+                      ),
+                      child: const Text(
+                        'Go To Booking',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -375,6 +361,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       ),
       drawer: const CustomNavigationDrawer(),
     );
+
   }
 
   Widget _buildDetailsBlock(String title, List<String> details, bool isValid) {

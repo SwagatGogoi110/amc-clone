@@ -227,7 +227,6 @@ class _BookingPageState extends State<BookingPage> {
         ),
         backgroundColor: const Color(0xFF243C63),
         body: SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -243,16 +242,19 @@ class _BookingPageState extends State<BookingPage> {
                           Text(
                             entry.key,
                             style: const TextStyle(
-                                color: Colors.yellow,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14),
+                              color: Colors.yellow,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
                           ),
                           Expanded(
                             child: Text(
                               '${entry.value}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(
-                                  fontSize: 14, color: Colors.white),
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ],
@@ -268,22 +270,24 @@ class _BookingPageState extends State<BookingPage> {
                       child: Text(
                         'Workshop ID',
                         style: TextStyle(
-                            color: Colors.yellow,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14),
+                          color: Colors.yellow,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                     Expanded(
                       child: Text(
                         workshopID,
                         textAlign: TextAlign.right,
-                        style:
-                            const TextStyle(fontSize: 14, color: Colors.white),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -306,8 +310,7 @@ class _BookingPageState extends State<BookingPage> {
                                   setState(() {
                                     isExpanded = !isExpanded;
                                     if (!isExpanded) {
-                                      lastSearchValue =
-                                          selectedDropDownOption ?? '';
+                                      lastSearchValue = selectedDropDownOption ?? '';
                                       selectedDropDownOption = null;
                                     } else {
                                       selectedDropDownOption = lastSearchValue;
@@ -315,37 +318,32 @@ class _BookingPageState extends State<BookingPage> {
                                   });
                                 },
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0),
+                                  padding: const EdgeInsets.symmetric(vertical: 12.0),
                                   child: isExpanded
                                       ? TextField(
-                                          onChanged: (value){
-                                            setState(() {
-                                              selectedDropDownOption = value;
-                                            });
-                                          },
-                                          decoration: const InputDecoration(
-                                            hintText: 'Search...',
-                                            isDense: true,
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    vertical: 2.0),
-                                            border: InputBorder.none,
-                                          ),
-                                        )
+                                    onChanged: (value) {
+                                      setState(() {
+                                        selectedDropDownOption = value;
+                                      });
+                                    },
+                                    decoration: const InputDecoration(
+                                      hintText: 'Search...',
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.symmetric(vertical: 2.0),
+                                      border: InputBorder.none,
+                                    ),
+                                  )
                                       : Row(
-                                          children: [
-                                            Text(
-                                              selectedScope ?? 'Scope of work',
-                                              style: TextStyle(
-                                                color: selectedScope == null
-                                                    ? Colors.grey
-                                                    : Colors.black,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 10),
-                                          ],
+                                    children: [
+                                      Text(
+                                        selectedScope ?? 'Scope of work',
+                                        style: TextStyle(
+                                          color: selectedScope == null ? Colors.grey : Colors.black,
                                         ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -399,7 +397,6 @@ class _BookingPageState extends State<BookingPage> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 10.0),
                 Row(
                   children: [
@@ -424,14 +421,11 @@ class _BookingPageState extends State<BookingPage> {
                             borderRadius: BorderRadius.circular(5),
                             borderSide: const BorderSide(color: Colors.black),
                           ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 10),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
+                    const SizedBox(width: 10),
                     SizedBox(
                       height: 40,
                       width: MediaQuery.of(context).size.width * 0.288,
@@ -453,16 +447,13 @@ class _BookingPageState extends State<BookingPage> {
                             borderRadius: BorderRadius.circular(5),
                             borderSide: const BorderSide(color: Colors.black),
                           ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 10),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.08,
-                    ),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.08),
                     ElevatedButton(
-                      onPressed: ()  async {
+                      onPressed: () async {
                         setState(() {
                           if (_amountController.text.isNotEmpty) {
                             amount = double.parse(_amountController.text);
@@ -473,19 +464,8 @@ class _BookingPageState extends State<BookingPage> {
                               'Amount': amount! * quantity,
                               'Description': _descriptionController.text,
                             });
-                            
-                            //Create a map to store the scope wtycount amccount such that next time when we try to add it will first scan the table if found deduct the frequency
-                            //else fetch it from the availability and add to the map.
-
-                            //when there is frequency change in the map, the new frequency would be then pass again to availability function which would then update the
-                            //text in the ui.
-
                             totalAmount += amount! * quantity;
                             selectedScope = initialSelectedScope;
-                            print(_amountController.text);
-                            print(amount);
-                            print("warranty available count: $_warrantyAvailableCount");
-                            print("amc available count: $_amcAvailableCount");
                             _amountController.clear();
                             _quantityController.clear();
                             _descriptionController.clear();
@@ -494,13 +474,11 @@ class _BookingPageState extends State<BookingPage> {
                           }
                         });
                       },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                       child: const Text('Add'),
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 10),
                 Row(
                   children: [
@@ -518,21 +496,18 @@ class _BookingPageState extends State<BookingPage> {
                             borderRadius: BorderRadius.circular(5),
                             borderSide: const BorderSide(color: Colors.black),
                           ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 10),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                         ),
                       ),
                     )
                   ],
                 ),
-
                 const SizedBox(height: 15.0),
-
                 SizedBox(
                   height: MediaQuery.of(context).size.width * 0.4,
                   child: ListView.builder(
                     shrinkWrap: true,
-                    physics: ScrollPhysics(),
+                    physics: const ScrollPhysics(),
                     itemCount: serviceList.length + 1,
                     itemBuilder: (BuildContext context, int index) {
                       if (index == 0) {
@@ -543,9 +518,10 @@ class _BookingPageState extends State<BookingPage> {
                               child: Text(
                                 'Service',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    color: Colors.white),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: Colors.white,
+                                ),
                                 textAlign: TextAlign.left,
                               ),
                             ),
@@ -554,9 +530,10 @@ class _BookingPageState extends State<BookingPage> {
                               child: Text(
                                 'Under',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    color: Colors.white),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: Colors.white,
+                                ),
                                 textAlign: TextAlign.center,
                               ),
                             ),
@@ -565,9 +542,10 @@ class _BookingPageState extends State<BookingPage> {
                               child: Text(
                                 'Amount',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    color: Colors.white),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: Colors.white,
+                                ),
                                 textAlign: TextAlign.right,
                               ),
                             ),
@@ -589,8 +567,7 @@ class _BookingPageState extends State<BookingPage> {
                                 child: Text(
                                   service['Service'].toString(),
                                   textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 15),
+                                  style: const TextStyle(color: Colors.white, fontSize: 15),
                                 ),
                               ),
                               Expanded(
@@ -598,8 +575,7 @@ class _BookingPageState extends State<BookingPage> {
                                 child: Text(
                                   service['Under'].toString(),
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 15),
+                                  style: const TextStyle(color: Colors.white, fontSize: 15),
                                 ),
                               ),
                               Expanded(
@@ -607,8 +583,7 @@ class _BookingPageState extends State<BookingPage> {
                                 child: Text(
                                   service['Amount'].toString(),
                                   textAlign: TextAlign.right,
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 15),
+                                  style: const TextStyle(color: Colors.white, fontSize: 15),
                                 ),
                               ),
                               Expanded(
@@ -616,12 +591,11 @@ class _BookingPageState extends State<BookingPage> {
                                 child: GestureDetector(
                                   onTap: () {
                                     setState(() {
-                                      totalAmount -=
-                                          service['Amount'] as double;
+                                      totalAmount -= service['Amount'] as double;
                                       serviceList.removeAt(index - 1);
                                     });
                                   },
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.delete,
                                     color: Colors.red,
                                   ),
@@ -629,9 +603,7 @@ class _BookingPageState extends State<BookingPage> {
                               )
                             ],
                           ),
-                          if (service['Description'] != null &&
-                              service['Description']
-                                  .isNotEmpty) // Only show description if it's not null or empty
+                          if (service['Description'] != null && service['Description'].isNotEmpty)
                             Row(
                               children: [
                                 Padding(
@@ -640,9 +612,10 @@ class _BookingPageState extends State<BookingPage> {
                                     '${service['Description']}',
                                     textAlign: TextAlign.left,
                                     style: const TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        color: Colors.white,
-                                        fontSize: 15),
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -654,11 +627,10 @@ class _BookingPageState extends State<BookingPage> {
                 ),
                 const SizedBox(
                   height: 10,
-                  child: const Divider(
+                  child: Divider(
                     color: Colors.white,
                   ),
                 ),
-
                 ListTile(
                   title: const Text(
                     'Total Amount',
@@ -678,7 +650,6 @@ class _BookingPageState extends State<BookingPage> {
                     ),
                   ),
                 ),
-                //add another container
                 Availability(
                   scopeOfWork: _scopeOfWorkController.text,
                   chassisNum: widget.chassisNum,
@@ -687,25 +658,26 @@ class _BookingPageState extends State<BookingPage> {
                     _amcAvailableCount = amcCount;
                   },
                 ),
-
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () async {
                     generateInvoice(context);
-                    final date =
-                        DateFormat('yyyy-MM-dd').format(DateTime.now());
-
+                    final date = DateFormat('yyyy-MM-dd').format(DateTime.now());
                     final invoiceItems = serviceList.map((service) {
                       String type = service['Under'] == 'AMC'
                           ? 'AMC'
-                          : (service['Under'] == 'Warranty'
-                              ? 'Warranty'
-                              : 'N/A');
+                          : (service['Under'] == 'Warranty' ? 'Warranty' : 'N/A');
+                      String itemName = '${service['Service']}';
+                      if (service['Description'] != null && service['Description'].isNotEmpty) {
+                        itemName += '\n${service['Description']}';
+                      }
                       return InvoiceItem(
-                          description: service['Service'],
-                          date: date,
-                          under: type,
-                          unitPrice: service['Amount'] as double);
+                        description: service['Service'],
+                        additionalDesc : service['Description'],
+                        date: date,
+                        under: type,
+                        unitPrice: service['Amount'] as double,
+                      );
                     }).toList();
                     final invoice = Invoice(
                       info: InvoiceInfo(
@@ -719,17 +691,15 @@ class _BookingPageState extends State<BookingPage> {
                       ),
                       items: invoiceItems,
                     );
-
                     final pdfFile = await PdfInvoiceApi.generate(invoice);
                     PdfApi.openFile(pdfFile);
                   },
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   child: const Text(
                     'Generate Invoice',
                     style: TextStyle(color: Colors.white),
                   ),
-                )
+                ),
               ],
             ),
           ),

@@ -99,6 +99,7 @@ class _ServiceDetailsPopupState extends State<ServiceDetailsPopup> {
       items: servicesList.map((service) {
         return InvoiceItem(
           description: service['name'] as String? ?? '',
+          additionalDesc: service['Description'],
           date: data['Date'] as String? ?? '', // Use 'Date' or provide another appropriate date if needed
           under: service['type'] as String? ?? '',
           unitPrice: double.parse(service['price'].toString() as String? ?? '0.0'),

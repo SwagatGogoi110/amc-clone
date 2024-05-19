@@ -15,6 +15,7 @@ class Invoice {
 
 class InvoiceItem {
   final String description;
+  final String additionalDesc;
   final String date;
   final String under;
   final double unitPrice;
@@ -22,6 +23,7 @@ class InvoiceItem {
 
   const InvoiceItem({
     required this.description,
+    required this.additionalDesc,
     required this.date,
     required this.under,
     required this.unitPrice,

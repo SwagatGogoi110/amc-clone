@@ -141,12 +141,13 @@ class PdfInvoiceApi {
       );
 
   static Widget buildInvoice(Invoice invoice) {
-    final headers = ['Description', 'Date', 'Under', 'Unit Price', 'Total'];
+    final headers = ['Service', 'Desc', 'Date', 'Under', 'Unit Price', 'Total'];
     final data = invoice.items.map((item) {
       //final total = item.unitPrice * (1 + item.vat);
 
       return [
         item.description,
+        item.additionalDesc,
         item.date,
         item.under,
         'Rs ${item.unitPrice}',
@@ -158,18 +159,22 @@ class PdfInvoiceApi {
     return TableHelper.fromTextArray(
       headers: headers,
       data: data,
-      border: null,
-      headerStyle: TextStyle(fontWeight: FontWeight.bold),
-      headerDecoration: BoxDecoration(color: PdfColors.grey300),
-      cellHeight: 30,
+      border: TableBorder.all(color: PdfColors.black, width: 1),
+      headerStyle: TextStyle(fontWeight: FontWeight.bold, color: PdfColors.white),
+      headerDecoration: BoxDecoration(color: PdfColors.black),
+      cellHeight: 40,
       cellAlignments: {
         0: Alignment.centerLeft,
-        1: Alignment.centerRight,
+        1: Alignment.centerLeft,
         2: Alignment.centerRight,
         3: Alignment.centerRight,
         4: Alignment.centerRight,
         5: Alignment.centerRight,
       },
+      columnWidths: {
+        1: FixedColumnWidth(80),
+      },
+      cellStyle: TextStyle(color: PdfColors.black),
     );
   }
 
